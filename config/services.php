@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    /*
+    | Maps JavaScript API + Places (لنموذج موقع المناسبة في لوحة Filament).
+    | فعّل في Google Cloud: Maps JavaScript API و Places API.
+    */
+    'google_maps' => [
+        'api_key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
+
 ];

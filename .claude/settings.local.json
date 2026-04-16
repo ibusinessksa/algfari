@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer require:*)",
+      "Bash(\"C:/Users/hp/.config/herd/bin/php.bat\" -r \"print_r\\(array_column\\(json_decode\\(file_get_contents\\('storage/app/private/scribe/collection.json'\\), true\\)['item'], 'name'\\)\\);\")"
+    ]
+  }
+}

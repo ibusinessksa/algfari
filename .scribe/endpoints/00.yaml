@@ -1,0 +1,639 @@
+name: Authentication
+description: |-
+
+  APIs for user authentication and registration.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/login
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for user authentication and registration.
+      subgroup: ''
+      subgroupDescription: ''
+      title: Login
+      description: 'Authenticate user with phone number or national ID.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      login:
+        custom: []
+        name: login
+        description: 'Phone number or National ID.'
+        required: true
+        example: '0551234567'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'User password.'
+        required: true
+        example: secret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      login: '0551234567'
+      password: secret123
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "user": {
+              "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+              "full_name": "محمد القحطاني",
+              "phone_number": "0551234567",
+              "national_id": "1234567890",
+              "email": "mohammed@example.com",
+              "city": "الرياض",
+              "region": "منطقة الرياض",
+              "gender": "male",
+              "role": "member",
+              "status": "active",
+              "is_featured": false,
+              "profile_image": null
+            },
+            "token": "1|a2b3c4d5e6f7g8h9i0jklmnopqrstuvwxyz"
+          }
+        headers: []
+        description: success
+      -
+        custom: []
+        status: 401
+        content: '{"message": "بيانات الدخول غير صحيحة"}'
+        headers: []
+        description: 'invalid credentials'
+      -
+        custom: []
+        status: 403
+        content: '{"message": "الحساب غير مفعل"}'
+        headers: []
+        description: 'inactive account'
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/send-otp
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for user authentication and registration.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Send OTP'
+      description: 'Send a one-time password to the given phone number.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      phone_number:
+        custom: []
+        name: phone_number
+        description: 'The phone number.'
+        required: true
+        example: '0551234567'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      purpose:
+        custom: []
+        name: purpose
+        description: 'The OTP purpose.'
+        required: true
+        example: register
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      phone_number: '0551234567'
+      purpose: register
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "تم إرسال رمز التحقق"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/verify-otp
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for user authentication and registration.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Verify OTP'
+      description: 'Verify the OTP code sent to the phone number.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      phone_number:
+        custom: []
+        name: phone_number
+        description: 'The phone number.'
+        required: true
+        example: '0551234567'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      code:
+        custom: []
+        name: code
+        description: 'The OTP code.'
+        required: true
+        example: '123456'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      purpose:
+        custom: []
+        name: purpose
+        description: 'One of: register, reset, verify. For password recovery use reset (then call reset-password without code).'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      phone_number: '0551234567'
+      code: '123456'
+      purpose: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "تم التحقق بنجاح", "verified": true}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"message": "رمز التحقق غير صالح"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/join-request
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for user authentication and registration.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Join Request'
+      description: 'Submit a request to join the family/tribe.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: multipart/form-data
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      full_name:
+        custom: []
+        name: full_name
+        description: 'Full name of the applicant.'
+        required: true
+        example: 'محمد أحمد القحطاني'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      phone_number:
+        custom: []
+        name: phone_number
+        description: 'Phone number.'
+        required: true
+        example: '0551234567'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      national_id:
+        custom: []
+        name: national_id
+        description: 'National ID number.'
+        required: false
+        example: '1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Email address.'
+        required: false
+        example: mohammed@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      pending_family_name:
+        custom: []
+        name: pending_family_name
+        description: 'Optional free-text family name (stored until admin links the member after approval).'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      city:
+        custom: []
+        name: city
+        description: 'City name.'
+        required: false
+        example: الرياض
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      region:
+        custom: []
+        name: region
+        description: 'Region name.'
+        required: false
+        example: 'منطقة الرياض'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'Password (min 6 chars).'
+        required: true
+        example: secret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      profile_image:
+        custom: []
+        name: profile_image
+        description: 'Profile image (max 5MB, image format).'
+        required: false
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      password_confirmation:
+        custom: []
+        name: password_confirmation
+        description: 'Password confirmation.'
+        required: true
+        example: secret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      full_name: 'محمد أحمد القحطاني'
+      phone_number: '0551234567'
+      national_id: '1234567890'
+      email: mohammed@example.com
+      pending_family_name: architecto
+      city: الرياض
+      region: 'منطقة الرياض'
+      password: secret123
+      password_confirmation: secret123
+    fileParameters:
+      profile_image: null
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "message": "تم تقديم طلب الانضمام بنجاح",
+            "join_request": {
+              "id": "a1b2c3d4-5678-9abc-def0-123456789abc",
+              "full_name": "محمد أحمد القحطاني",
+              "phone_number": "0551234567",
+              "national_id": "1234567890",
+              "email": "mohammed@example.com",
+              "pending_family_name": "الجربوع",
+              "city": "الرياض",
+              "region": "منطقة الرياض",
+              "status": "pending",
+              "created_at": "2026-04-13T10:00:00.000000Z"
+            }
+          }
+        headers: []
+        description: success
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/reset-password
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for user authentication and registration.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Reset Password'
+      description: |-
+        Step 3 of password recovery (UI): set a new password after OTP was verified in
+        `verify-otp` with purpose `reset`. Does not accept the code again.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      phone_number:
+        custom: []
+        name: phone_number
+        description: 'Same phone used for send-otp / verify-otp.'
+        required: true
+        example: '0551234567'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'New password (min 6 chars).'
+        required: true
+        example: newsecret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password_confirmation:
+        custom: []
+        name: password_confirmation
+        description: 'Password confirmation.'
+        required: true
+        example: newsecret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      phone_number: '0551234567'
+      password: newsecret123
+      password_confirmation: newsecret123
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "تم إعادة تعيين كلمة المرور بنجاح"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: '{"message": "المستخدم غير موجود"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"message": "..."}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: api/v1/auth/change-password
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for user authentication and registration.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Change Password'
+      description: "Change the authenticated user's password."
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      current_password:
+        custom: []
+        name: current_password
+        description: 'Current password.'
+        required: true
+        example: oldsecret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'New password (min 6 chars).'
+        required: true
+        example: newsecret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password_confirmation:
+        custom: []
+        name: password_confirmation
+        description: 'Password confirmation.'
+        required: true
+        example: newsecret123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      current_password: oldsecret123
+      password: newsecret123
+      password_confirmation: newsecret123
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "تم تغيير كلمة المرور بنجاح"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"message": "كلمة المرور الحالية غير صحيحة"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/logout
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        APIs for user authentication and registration.
+      subgroup: ''
+      subgroupDescription: ''
+      title: Logout
+      description: 'Revoke the current access token.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "تم تسجيل الخروج بنجاح"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

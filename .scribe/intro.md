@@ -1,0 +1,15 @@
+# Introduction
+
+API Documentation for Family/Tribe Management Application
+
+<aside>
+    <strong>Base URL</strong>: <code>http://algfari.test</code>
+</aside>
+
+    This documentation provides all the information you need to work with the Family Tribe App API.
+
+    The API supports Arabic and English localization via the `Accept-Language` header.
+
+    <aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
+    You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>
+
