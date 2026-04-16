@@ -5,16 +5,20 @@ namespace App\Filament\Widgets;
 use App\Enums\JoinRequestStatus;
 use App\Models\JoinRequest;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Contracts\Support\Htmlable;
 
 class JoinRequestsStatusChart extends ChartWidget
 {
-    protected static ?string $heading = 'طلبات الانضمام حسب الحالة';
-
     protected static ?int $sort = 3;
 
     protected static string $color = 'warning';
 
     protected int|string|array $columnSpan = 1;
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('admin_panel.widgets.join_status_chart.heading');
+    }
 
     protected function getData(): array
     {
@@ -25,7 +29,7 @@ class JoinRequestsStatusChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'الطلبات',
+                    'label' => __('admin_panel.widgets.join_status_chart.dataset_label'),
                     'data' => [$pending, $approved, $rejected],
                     'backgroundColor' => [
                         'rgba(245, 158, 11, 0.85)',

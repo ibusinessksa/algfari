@@ -13,9 +13,12 @@ class MembersRelationManager extends RelationManager
 {
     protected static string $relationship = 'members';
 
-    protected static ?string $title = 'أعضاء العائلة';
-
     protected static ?string $recordTitleAttribute = 'full_name';
+
+    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    {
+        return __('admin_panel.members_relation.title');
+    }
 
     public function isReadOnly(): bool
     {
@@ -28,24 +31,25 @@ class MembersRelationManager extends RelationManager
             ->recordTitleAttribute('full_name')
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('الاسم')
+                    ->label(__('admin_panel.common.name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone_number')
-                    ->label('الجوال')
+                    ->label(__('admin_panel.common.mobile'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('البريد')
+                    ->label(__('admin_panel.common.email'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('city')
-                    ->label('المدينة')
+                    ->label(__('admin_panel.common.city'))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
+                    ->formatStateUsing(fn (UserStatus $state): string => $state->label())
                     ->badge()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الانضمام')
+                    ->label(__('admin_panel.common.join_date'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -53,16 +57,16 @@ class MembersRelationManager extends RelationManager
             ->defaultSort('full_name')
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
                     ->options(UserStatus::class),
             ])
             ->actions([
                 Tables\Actions\Action::make('edit_member')
-                    ->label('تعديل العضو')
+                    ->label(__('admin_panel.members_relation.edit_member'))
                     ->icon('heroicon-o-pencil-square')
                     ->url(fn (User $record): string => UserResource::getUrl('edit', ['record' => $record])),
             ])
-            ->emptyStateHeading('لا يوجد أعضاء')
-            ->emptyStateDescription('لم يتم ربط أي عضو بهذه العائلة بعد.');
+            ->emptyStateHeading(__('admin_panel.members_relation.empty_heading'))
+            ->emptyStateDescription(__('admin_panel.members_relation.empty_description'));
     }
 }

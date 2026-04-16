@@ -14,77 +14,90 @@ use Filament\Tables\Table;
 class OfferResource extends Resource
 {
     protected static ?string $model = Offer::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'المحتوى';
-    protected static ?string $modelLabel = 'عرض';
-    protected static ?string $pluralModelLabel = 'العروض';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin_panel.nav.content');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin_panel.offer.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin_panel.offer.plural');
+    }
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('بيانات العرض')->schema([
+            Forms\Components\Section::make(__('admin_panel.offer.section'))->schema([
                 Forms\Components\Tabs::make('translations')
                     ->tabs([
-                        Forms\Components\Tabs\Tab::make('العربية')
+                        Forms\Components\Tabs\Tab::make(__('admin_panel.tabs.arabic'))
                             ->schema([
                                 Forms\Components\TextInput::make('title.ar')
-                                    ->label('العنوان')
+                                    ->label(__('admin_panel.common.title'))
                                     ->required()
                                     ->maxLength(255),
                                 Forms\Components\RichEditor::make('description.ar')
-                                    ->label('الوصف')
+                                    ->label(__('admin_panel.common.description'))
                                     ->columnSpanFull(),
                             ]),
-                        Forms\Components\Tabs\Tab::make('English')
+                        Forms\Components\Tabs\Tab::make(__('admin_panel.tabs.english'))
                             ->schema([
                                 Forms\Components\TextInput::make('title.en')
-                                    ->label('Title')
+                                    ->label(__('admin_panel.common.title'))
                                     ->required()
                                     ->maxLength(255),
                                 Forms\Components\RichEditor::make('description.en')
-                                    ->label('Description')
+                                    ->label(__('admin_panel.common.description'))
                                     ->columnSpanFull(),
                             ]),
                     ])
                     ->columnSpanFull(),
 
                 Forms\Components\Select::make('category')
-                    ->label('التصنيف')
+                    ->label(__('admin_panel.common.category'))
                     ->options(OfferCategory::class)
                     ->required(),
 
                 Forms\Components\Select::make('offered_by')
-                    ->label('مقدم العرض')
+                    ->label(__('admin_panel.common.offered_by'))
                     ->relationship('offeredBy', 'full_name')
                     ->searchable()
                     ->preload()
                     ->required(),
 
                 Forms\Components\TextInput::make('service_address')
-                    ->label('عنوان الخدمة'),
+                    ->label(__('admin_panel.common.service_address')),
 
                 Forms\Components\TextInput::make('contact_phone')
-                    ->label('رقم التواصل')
+                    ->label(__('admin_panel.common.contact_phone'))
                     ->maxLength(20),
 
                 Forms\Components\TextInput::make('contact_whatsapp')
-                    ->label('واتساب')
+                    ->label(__('admin_panel.common.whatsapp'))
                     ->maxLength(20),
 
                 Forms\Components\DateTimePicker::make('expires_at')
-                    ->label('تاريخ الانتهاء'),
+                    ->label(__('admin_panel.common.expires_at')),
 
                 Forms\Components\Toggle::make('is_active')
-                    ->label('فعال')
+                    ->label(__('admin_panel.common.active'))
                     ->default(true),
 
                 Forms\Components\SpatieMediaLibraryFileUpload::make('offer_image')
-                    ->label('صورة العرض')
+                    ->label(__('admin_panel.common.image'))
                     ->collection('offer_image')
                     ->image(),
 
                 Forms\Components\SpatieMediaLibraryFileUpload::make('gallery')
-                    ->label('معرض الصور')
+                    ->label(__('admin_panel.common.gallery'))
                     ->collection('gallery')
                     ->multiple()
                     ->image(),
@@ -97,24 +110,25 @@ class OfferResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('offer_image')
-                    ->label('الصورة')
+                    ->label(__('admin_panel.common.image'))
                     ->collection('offer_image')
                     ->circular(),
                 Tables\Columns\TextColumn::make('title')
-                    ->label('العنوان')
+                    ->label(__('admin_panel.common.title'))
                     ->searchable()
                     ->sortable()
                     ->limit(40),
                 Tables\Columns\TextColumn::make('category')
-                    ->label('التصنيف')
+                    ->label(__('admin_panel.common.category'))
+                    ->formatStateUsing(fn (OfferCategory $state): string => $state->label())
                     ->badge(),
                 Tables\Columns\TextColumn::make('offeredBy.full_name')
-                    ->label('مقدم العرض'),
+                    ->label(__('admin_panel.common.offered_by')),
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('فعال')
+                    ->label(__('admin_panel.common.active'))
                     ->boolean(),
                 Tables\Columns\TextColumn::make('expires_at')
-                    ->label('ينتهي في')
+                    ->label(__('admin_panel.common.expires_at'))
                     ->dateTime()
                     ->sortable(),
             ])
@@ -123,7 +137,7 @@ class OfferResource extends Resource
                 Tables\Filters\SelectFilter::make('category')
                     ->options(OfferCategory::class),
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('فعال'),
+                    ->label(__('admin_panel.common.active')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -10,9 +10,14 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class LatestJoinRequests extends BaseWidget
 {
-    protected static ?string $heading = 'أحدث طلبات الانضمام';
     protected int|string|array $columnSpan = 'full';
+
     protected static ?int $sort = 50;
+
+    protected function getTableHeading(): ?string
+    {
+        return __('admin_panel.widgets.latest_join.heading');
+    }
 
     public function table(Table $table): Table
     {
@@ -25,13 +30,14 @@ class LatestJoinRequests extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('الاسم'),
+                    ->label(__('admin_panel.common.name')),
                 Tables\Columns\TextColumn::make('phone_number')
-                    ->label('الجوال'),
+                    ->label(__('admin_panel.common.mobile')),
                 Tables\Columns\TextColumn::make('city')
-                    ->label('المدينة'),
+                    ->label(__('admin_panel.common.city')),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
+                    ->formatStateUsing(fn (JoinRequestStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (JoinRequestStatus $state) => match ($state) {
                         JoinRequestStatus::Pending => 'warning',
@@ -39,7 +45,7 @@ class LatestJoinRequests extends BaseWidget
                         JoinRequestStatus::Rejected => 'danger',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('التاريخ')
+                    ->label(__('admin_panel.common.date'))
                     ->since(),
             ]);
     }
