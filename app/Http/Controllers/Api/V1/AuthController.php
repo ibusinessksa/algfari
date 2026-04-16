@@ -42,7 +42,7 @@ class AuthController extends Controller
      *
      * @response 200 scenario="success" {
      *   "user": {
-     *     "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+     *     "id": 1,
      *     "full_name": "محمد القحطاني",
      *     "phone_number": "0551234567",
      *     "national_id": "1234567890",
@@ -53,7 +53,10 @@ class AuthController extends Controller
      *     "role": "member",
      *     "status": "active",
      *     "is_featured": false,
-     *     "profile_image": null
+     *     "profile_image": null,
+     *     "profile_image_medium": null,
+     *     "profile_image_thumb": null,
+     *     "created_at": "2026-04-01T10:00:00.000000Z"
      *   },
      *   "token": "1|a2b3c4d5e6f7g8h9i0jklmnopqrstuvwxyz"
      * }
@@ -63,10 +66,10 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $user = User::where('phone_number', $request->login)
-                     ->orWhere('national_id', $request->login)
-                     ->first();
+            ->orWhere('national_id', $request->login)
+            ->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json(['message' => __('auth.failed')], 401);
         }
 
@@ -133,7 +136,7 @@ class AuthController extends Controller
             $purpose
         );
 
-        if (!$valid) {
+        if (! $valid) {
             return response()->json(['message' => __('otp.invalid')], 422);
         }
 
@@ -167,15 +170,20 @@ class AuthController extends Controller
      * @response 201 scenario="success" {
      *   "message": "تم تقديم طلب الانضمام بنجاح",
      *   "join_request": {
-     *     "id": "a1b2c3d4-5678-9abc-def0-123456789abc",
+     *     "id": 1,
      *     "full_name": "محمد أحمد القحطاني",
      *     "phone_number": "0551234567",
      *     "national_id": "1234567890",
      *     "email": "mohammed@example.com",
-     *     "pending_family_name": "الجربوع",
+     *     "pending_family_name": null,
      *     "city": "الرياض",
      *     "region": "منطقة الرياض",
      *     "status": "pending",
+     *     "rejection_reason": null,
+     *     "profile_image": null,
+     *     "profile_image_medium": null,
+     *     "profile_image_thumb": null,
+     *     "reviewed_at": null,
      *     "created_at": "2026-04-13T10:00:00.000000Z"
      *   }
      * }
@@ -188,7 +196,7 @@ class AuthController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $joinRequest->addMediaFromRequest('profile_image')
-                        ->toMediaCollection('profile_image');
+                ->toMediaCollection('profile_image');
         }
 
         return response()->json([
@@ -248,7 +256,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return response()->json(['message' => __('password.incorrect')], 422);
         }
 

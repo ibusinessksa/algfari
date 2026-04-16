@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\RegisterDeviceRequest;
 use App\Http\Requests\Api\V1\UpdateMemberRequest;
 use App\Http\Resources\Api\V1\MemberCardResource;
 use App\Http\Resources\Api\V1\UserResource;
-use App\Enums\UserRole;
 use App\Models\User;
 use App\Models\UserDevice;
 use App\Services\FamilyRequestService;
@@ -42,7 +42,7 @@ class MemberController extends Controller
      * @response 200 scenario="success" {
      *   "data": [
      *     {
-     *       "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+     *       "id": 1,
      *       "full_name": "محمد القحطاني",
      *       "phone_number": "0551234567",
      *       "national_id": "1234567890",
@@ -69,7 +69,7 @@ class MemberController extends Controller
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('full_name', 'like', "%{$search}%")
-                      ->orWhere('phone_number', 'like', "%{$search}%");
+                        ->orWhere('phone_number', 'like', "%{$search}%");
                 });
             })
             ->when($request->filled('family_id'), fn ($q) => $q->where('family_id', $request->integer('family_id')))
@@ -91,11 +91,11 @@ class MemberController extends Controller
      *
      * Get detailed information about a specific member.
      *
-     * @urlParam member string required The member UUID. Example: 9a8b7c6d-1234-5678-abcd-ef0123456789
+     * @urlParam member int required The member user id. Example: 1
      *
      * @response 200 scenario="success" {
      *   "data": {
-     *     "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+     *     "id": 1,
      *     "full_name": "محمد القحطاني",
      *     "phone_number": "0551234567",
      *     "national_id": "1234567890",
@@ -129,7 +129,8 @@ class MemberController extends Controller
      *
      * Update a member's profile information.
      *
-     * @urlParam member string required The member UUID. Example: 9a8b7c6d-1234-5678-abcd-ef0123456789
+     * @urlParam member int required The member user id. Example: 1
+     *
      * @bodyParam full_name string Full name. Example: محمد أحمد
      * @bodyParam email string Email address. Example: mohammed@example.com
      * @bodyParam pending_family_name string Free-text family name (creates admin review request). Send empty to withdraw.
@@ -143,7 +144,7 @@ class MemberController extends Controller
      * @response 200 scenario="success" {
      *   "message": "تم التحديث بنجاح",
      *   "user": {
-     *     "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+     *     "id": 1,
      *     "full_name": "محمد أحمد",
      *     "phone_number": "0551234567",
      *     "email": "mohammed@example.com",
@@ -188,7 +189,7 @@ class MemberController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $member->addMediaFromRequest('profile_image')
-                   ->toMediaCollection('profile_image');
+                ->toMediaCollection('profile_image');
         }
 
         $member = $member->fresh();
@@ -209,11 +210,11 @@ class MemberController extends Controller
      *
      * Get the membership card information for a member.
      *
-     * @urlParam member string required The member UUID. Example: 9a8b7c6d-1234-5678-abcd-ef0123456789
+     * @urlParam member int required The member user id. Example: 1
      *
      * @response 200 scenario="success" {
      *   "data": {
-     *     "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+     *     "id": 1,
      *     "full_name": "محمد القحطاني",
      *     "phone_number": "0551234567",
      *     "national_id": "1234567890",

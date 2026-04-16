@@ -34,6 +34,9 @@ class NewsController extends Controller
      *       "time_from": "10:00:00",
      *       "time_to": "14:00:00",
      *       "cover_image": "http://algfari.test/storage/media/5/cover.jpg",
+     *       "cover_image_medium": "http://algfari.test/storage/media/5/conversions/cover-medium.jpg",
+     *       "cover_image_thumb": "http://algfari.test/storage/media/5/conversions/cover-thumb.jpg",
+     *       "gallery": [{"url": "...", "medium": "...", "thumb": "..."}],
      *       "created_at": "2026-04-10T08:00:00.000000Z"
      *     }
      *   ],
@@ -79,9 +82,10 @@ class NewsController extends Controller
      *     "time_from": "10:00:00",
      *     "time_to": "14:00:00",
      *     "cover_image": "http://algfari.test/storage/media/5/cover.jpg",
+     *     "cover_image_medium": "http://algfari.test/storage/media/5/conversions/cover-medium.jpg",
+     *     "cover_image_thumb": "http://algfari.test/storage/media/5/conversions/cover-thumb.jpg",
      *     "gallery": [
-     *       "http://algfari.test/storage/media/6/photo1.jpg",
-     *       "http://algfari.test/storage/media/7/photo2.jpg"
+     *       {"url": "http://algfari.test/storage/media/6/photo1.jpg", "medium": "...", "thumb": "..."}
      *     ],
      *     "created_at": "2026-04-10T08:00:00.000000Z"
      *   }
