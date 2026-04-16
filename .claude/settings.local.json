@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(composer require:*)",
-      "Bash(\"C:/Users/hp/.config/herd/bin/php.bat\" -r \"print_r\\(array_column\\(json_decode\\(file_get_contents\\('storage/app/private/scribe/collection.json'\\), true\\)['item'], 'name'\\)\\);\")"
+      "Bash(\"C:/Users/hp/.config/herd/bin/php.bat\" -r \"print_r\\(array_column\\(json_decode\\(file_get_contents\\('storage/app/private/scribe/collection.json'\\), true\\)['item'], 'name'\\)\\);\")",
+      "Bash(npm run *)",
+      "Bash(ls node_modules/.bin/vite*)",
+      "Bash(npm install *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://algfari.test/)",
+      "Bash(curl -s http://algfari.test/)"
     ]
   }
 }
