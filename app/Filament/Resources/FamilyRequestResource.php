@@ -20,13 +20,22 @@ class FamilyRequestResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-home-modern';
 
-    protected static ?string $navigationGroup = 'إدارة الأعضاء';
-
-    protected static ?string $modelLabel = 'طلب عائلة';
-
-    protected static ?string $pluralModelLabel = 'طلبات العائلات';
-
     protected static ?int $navigationSort = 6;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin_panel.nav.members');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin_panel.family_request.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin_panel.family_request.plural');
+    }
 
     public static function getNavigationBadge(): ?string
     {
@@ -51,17 +60,18 @@ class FamilyRequestResource extends Resource
             ->modifyQueryUsing(fn ($query) => $query->with('user'))
             ->columns([
                 Tables\Columns\TextColumn::make('user.full_name')
-                    ->label('العضو')
+                    ->label(__('admin_panel.common.member'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.pending_family_name')
-                    ->label('الاسم كما أدخله العضو')
+                    ->label(__('admin_panel.family_request.name_as_entered'))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('المفتاح المعياري للمطابقة')
+                    ->label(__('admin_panel.family_request.name_key'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
+                    ->formatStateUsing(fn (FamilyRequestStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (FamilyRequestStatus $state) => match ($state) {
                         FamilyRequestStatus::Pending => 'warning',
@@ -69,7 +79,7 @@ class FamilyRequestResource extends Resource
                         FamilyRequestStatus::Rejected => 'danger',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الطلب')
+                    ->label(__('admin_panel.common.request_date'))
                     ->dateTime()
                     ->sortable(),
             ])
@@ -80,12 +90,12 @@ class FamilyRequestResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('approve_link')
-                    ->label('ربط بعائلة موجودة')
+                    ->label(__('admin_panel.family_request.link_existing'))
                     ->icon('heroicon-o-link')
                     ->color('success')
                     ->form([
                         Forms\Components\Select::make('family_id')
-                            ->label('العائلة')
+                            ->label(__('admin_panel.common.family'))
                             ->options(fn () => Family::query()->orderBy('name')->pluck('name', 'id'))
                             ->searchable()
                             ->required(),
@@ -99,23 +109,23 @@ class FamilyRequestResource extends Resource
                         );
 
                         FilamentNotification::make()
-                            ->title('تم ربط العضو بالعائلة')
+                            ->title(__('admin_panel.family_request.linked_notification'))
                             ->success()
                             ->send();
                     })
                     ->visible(fn (FamilyRequest $record) => $record->status === FamilyRequestStatus::Pending),
 
                 Tables\Actions\Action::make('approve_create')
-                    ->label('إنشاء عائلة والربط')
+                    ->label(__('admin_panel.family_request.create_family'))
                     ->icon('heroicon-o-plus-circle')
                     ->color('primary')
                     ->form([
                         Forms\Components\TextInput::make('family_name')
-                            ->label('اسم العائلة المعتمد')
+                            ->label(__('admin_panel.family_request.approved_family_name'))
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('family_origin')
-                            ->label('الأصل / النسب')
+                            ->label(__('admin_panel.common.origin_lineage'))
                             ->maxLength(255),
                     ])
                     ->action(function (FamilyRequest $record, array $data) {
@@ -127,19 +137,19 @@ class FamilyRequestResource extends Resource
                         );
 
                         FilamentNotification::make()
-                            ->title('تم إنشاء العائلة وربط العضو')
+                            ->title(__('admin_panel.family_request.created_notification'))
                             ->success()
                             ->send();
                     })
                     ->visible(fn (FamilyRequest $record) => $record->status === FamilyRequestStatus::Pending),
 
                 Tables\Actions\Action::make('reject')
-                    ->label('رفض')
+                    ->label(__('admin_panel.family_request.reject'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->form([
                         Forms\Components\Textarea::make('rejection_reason')
-                            ->label('سبب الرفض')
+                            ->label(__('admin_panel.common.rejection_reason'))
                             ->required(),
                     ])
                     ->action(function (FamilyRequest $record, array $data) {
@@ -150,7 +160,7 @@ class FamilyRequestResource extends Resource
                         );
 
                         FilamentNotification::make()
-                            ->title('تم رفض الطلب')
+                            ->title(__('admin_panel.family_request.rejected_notification'))
                             ->danger()
                             ->send();
                     })

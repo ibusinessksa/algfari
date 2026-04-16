@@ -5,19 +5,26 @@ namespace App\Filament\Widgets;
 use App\Enums\TransactionStatus;
 use App\Models\FamilyFundTransaction;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 
 class FundTransactionsDailyChart extends ChartWidget
 {
-    protected static ?string $heading = 'صندوق العائلة — المعاملات المعتمدة (آخر ١٤ يوماً)';
-
-    protected static ?string $description = 'مجموع المبالغ اليومية (ر.س)';
-
     protected static ?int $sort = 4;
 
     protected static string $color = 'success';
 
     protected int|string|array $columnSpan = 1;
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('admin_panel.widgets.fund_chart.heading');
+    }
+
+    public function getDescription(): string|Htmlable|null
+    {
+        return __('admin_panel.widgets.fund_chart.description');
+    }
 
     protected function getData(): array
     {
@@ -36,7 +43,7 @@ class FundTransactionsDailyChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'المبلغ',
+                    'label' => __('admin_panel.widgets.fund_chart.dataset_label'),
                     'data' => $values,
                     'backgroundColor' => 'rgba(22, 163, 74, 0.45)',
                     'borderColor' => 'rgba(22, 163, 74, 1)',

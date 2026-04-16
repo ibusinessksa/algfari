@@ -16,98 +16,111 @@ use Filament\Tables\Table;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'إدارة الأعضاء';
-    protected static ?string $modelLabel = 'عضو';
-    protected static ?string $pluralModelLabel = 'الأعضاء';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin_panel.nav.members');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin_panel.user.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin_panel.user.plural');
+    }
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('البيانات الأساسية')->schema([
+            Forms\Components\Section::make(__('admin_panel.common.basic_info'))->schema([
                 Forms\Components\TextInput::make('full_name')
-                    ->label('الاسم الكامل')
+                    ->label(__('admin_panel.common.full_name'))
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('phone_number')
-                    ->label('رقم الجوال')
+                    ->label(__('admin_panel.common.phone'))
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(20),
 
                 Forms\Components\TextInput::make('national_id')
-                    ->label('رقم الهوية')
+                    ->label(__('admin_panel.common.national_id'))
                     ->unique(ignoreRecord: true)
                     ->maxLength(20),
 
                 Forms\Components\TextInput::make('email')
-                    ->label('البريد الإلكتروني')
+                    ->label(__('admin_panel.common.email'))
                     ->email()
                     ->unique(ignoreRecord: true),
 
                 Forms\Components\TextInput::make('password')
-                    ->label('كلمة المرور')
+                    ->label(__('admin_panel.common.password'))
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $operation) => $operation === 'create'),
 
                 Forms\Components\Select::make('gender')
-                    ->label('الجنس')
+                    ->label(__('admin_panel.common.gender'))
                     ->options(Gender::class)
                     ->required(),
 
                 Forms\Components\Select::make('role')
-                    ->label('الصلاحية')
+                    ->label(__('admin_panel.common.role'))
                     ->options(UserRole::class)
                     ->required(),
 
                 Forms\Components\Select::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
                     ->options(UserStatus::class)
                     ->required(),
             ])->columns(2),
 
-            Forms\Components\Section::make('بيانات إضافية')->schema([
+            Forms\Components\Section::make(__('admin_panel.common.extra_info'))->schema([
                 Forms\Components\Select::make('family_id')
-                    ->label('العائلة')
+                    ->label(__('admin_panel.common.family'))
                     ->relationship('family', 'name')
                     ->searchable()
                     ->preload()
                     ->nullable(),
 
                 Forms\Components\TextInput::make('pending_family_name')
-                    ->label('طلب عائلة (قيد المراجعة)')
+                    ->label(__('admin_panel.common.pending_family_name_field'))
                     ->disabled()
                     ->dehydrated(false)
                     ->visible(fn ($record) => $record instanceof User && filled($record->pending_family_name)),
 
                 Forms\Components\TextInput::make('workplace')
-                    ->label('جهة العمل')
+                    ->label(__('admin_panel.common.workplace'))
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('current_job')
-                    ->label('العمل الحالي')
+                    ->label(__('admin_panel.common.current_job'))
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('city')
-                    ->label('المدينة')
+                    ->label(__('admin_panel.common.city'))
                     ->maxLength(100),
 
                 Forms\Components\TextInput::make('region')
-                    ->label('المنطقة')
+                    ->label(__('admin_panel.common.region'))
                     ->maxLength(100),
 
                 Forms\Components\Textarea::make('bio')
-                    ->label('نبذة')
+                    ->label(__('admin_panel.common.bio'))
                     ->columnSpanFull(),
 
                 Forms\Components\Toggle::make('is_featured')
-                    ->label('عضو مميز'),
+                    ->label(__('admin_panel.user.featured_member')),
 
                 Forms\Components\SpatieMediaLibraryFileUpload::make('profile_image')
-                    ->label('صورة الملف الشخصي')
+                    ->label(__('admin_panel.common.profile_image'))
                     ->collection('profile_image')
                     ->image(),
             ])->columns(2),
@@ -119,24 +132,27 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('profile_image')
-                    ->label('الصورة')
+                    ->label(__('admin_panel.common.image'))
                     ->collection('profile_image')
                     ->circular(),
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('الاسم')
+                    ->label(__('admin_panel.common.name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone_number')
-                    ->label('الجوال')
+                    ->label(__('admin_panel.common.mobile'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('gender')
-                    ->label('الجنس')
+                    ->label(__('admin_panel.common.gender'))
+                    ->formatStateUsing(fn (Gender $state): string => $state->label())
                     ->badge(),
                 Tables\Columns\TextColumn::make('role')
-                    ->label('الصلاحية')
+                    ->label(__('admin_panel.common.role'))
+                    ->formatStateUsing(fn (UserRole $state): string => $state->label())
                     ->badge(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
+                    ->formatStateUsing(fn (UserStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (UserStatus $state) => match ($state) {
                         UserStatus::Active => 'success',
@@ -144,10 +160,10 @@ class UserResource extends Resource
                         UserStatus::Rejected => 'danger',
                     }),
                 Tables\Columns\IconColumn::make('is_featured')
-                    ->label('مميز')
+                    ->label(__('admin_panel.common.featured'))
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ التسجيل')
+                    ->label(__('admin_panel.common.registration_date'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -160,7 +176,7 @@ class UserResource extends Resource
                 Tables\Filters\SelectFilter::make('gender')
                     ->options(Gender::class),
                 Tables\Filters\TernaryFilter::make('is_featured')
-                    ->label('مميز'),
+                    ->label(__('admin_panel.common.featured')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

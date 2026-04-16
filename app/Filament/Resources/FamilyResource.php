@@ -19,27 +19,36 @@ class FamilyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'إدارة الأعضاء';
-
-    protected static ?string $modelLabel = 'عائلة';
-
-    protected static ?string $pluralModelLabel = 'العائلات';
-
     protected static ?int $navigationSort = 5;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin_panel.nav.members');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin_panel.family.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin_panel.family.plural');
+    }
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('بيانات العائلة')->schema([
+            Forms\Components\Section::make(__('admin_panel.family.section'))->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('اسم العائلة')
+                    ->label(__('admin_panel.family.family_name'))
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('origin')
-                    ->label('الأصل / النسب')
+                    ->label(__('admin_panel.common.origin_lineage'))
                     ->maxLength(255)
-                    ->placeholder('مثال: أهل الرس'),
+                    ->placeholder(__('admin_panel.family.origin_placeholder')),
             ])->columns(2),
         ]);
     }
@@ -48,18 +57,18 @@ class FamilyResource extends Resource
     {
         return $infolist
             ->schema([
-                Infolists\Components\Section::make('بيانات العائلة')
+                Infolists\Components\Section::make(__('admin_panel.family.section'))
                     ->schema([
                         Infolists\Components\TextEntry::make('name')
-                            ->label('اسم العائلة'),
+                            ->label(__('admin_panel.family.family_name')),
                         Infolists\Components\TextEntry::make('origin')
-                            ->label('الأصل / النسب')
+                            ->label(__('admin_panel.common.origin_lineage'))
                             ->placeholder('—'),
                         Infolists\Components\TextEntry::make('members_count')
-                            ->label('عدد الأعضاء')
+                            ->label(__('admin_panel.common.members_count'))
                             ->state(fn (Family $record): int => $record->members()->count()),
                         Infolists\Components\TextEntry::make('created_at')
-                            ->label('تاريخ الإنشاء')
+                            ->label(__('admin_panel.common.created_at'))
                             ->dateTime(),
                     ])
                     ->columns(2),
@@ -71,19 +80,19 @@ class FamilyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('اسم العائلة')
+                    ->label(__('admin_panel.family.family_name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('origin')
-                    ->label('الأصل')
+                    ->label(__('admin_panel.common.origin'))
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('members_count')
-                    ->label('عدد الأعضاء')
+                    ->label(__('admin_panel.common.members_count'))
                     ->counts('members')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الإنشاء')
+                    ->label(__('admin_panel.common.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -94,7 +103,7 @@ class FamilyResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->label('التفاصيل'),
+                    ->label(__('admin_panel.common.details')),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

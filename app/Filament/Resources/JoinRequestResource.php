@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Enums\JoinRequestStatus;
 use App\Filament\Resources\JoinRequestResource\Pages;
 use App\Models\JoinRequest;
-use App\Models\User;
 use App\Notifications\JoinRequestRejected;
 use App\Services\JoinRequestService;
 use Filament\Forms;
@@ -18,10 +17,23 @@ use Filament\Tables\Table;
 class JoinRequestResource extends Resource
 {
     protected static ?string $model = JoinRequest::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
-    protected static ?string $navigationGroup = 'إدارة الأعضاء';
-    protected static ?string $modelLabel = 'طلب انضمام';
-    protected static ?string $pluralModelLabel = 'طلبات الانضمام';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin_panel.nav.members');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin_panel.join_request.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin_panel.join_request.plural');
+    }
 
     public static function getNavigationBadge(): ?string
     {
@@ -36,33 +48,33 @@ class JoinRequestResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('بيانات الطلب')->schema([
+            Forms\Components\Section::make(__('admin_panel.join_request.section'))->schema([
                 Forms\Components\TextInput::make('full_name')
-                    ->label('الاسم الكامل')
+                    ->label(__('admin_panel.common.full_name'))
                     ->required(),
                 Forms\Components\TextInput::make('phone_number')
-                    ->label('رقم الجوال')
+                    ->label(__('admin_panel.common.phone'))
                     ->required(),
                 Forms\Components\TextInput::make('national_id')
-                    ->label('رقم الهوية'),
+                    ->label(__('admin_panel.common.national_id')),
                 Forms\Components\TextInput::make('email')
-                    ->label('البريد الإلكتروني'),
+                    ->label(__('admin_panel.common.email')),
                 Forms\Components\TextInput::make('pending_family_name')
-                    ->label('اسم العائلة (قيد المراجعة)')
+                    ->label(__('admin_panel.join_request.family_name_pending'))
                     ->maxLength(255),
                 Forms\Components\TextInput::make('city')
-                    ->label('المدينة'),
+                    ->label(__('admin_panel.common.city')),
                 Forms\Components\TextInput::make('region')
-                    ->label('المنطقة'),
+                    ->label(__('admin_panel.common.region')),
                 Forms\Components\Select::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
                     ->options(JoinRequestStatus::class)
                     ->disabled(),
                 Forms\Components\Textarea::make('rejection_reason')
-                    ->label('سبب الرفض')
+                    ->label(__('admin_panel.common.rejection_reason'))
                     ->columnSpanFull(),
                 Forms\Components\SpatieMediaLibraryFileUpload::make('profile_image')
-                    ->label('صورة الملف الشخصي')
+                    ->label(__('admin_panel.common.profile_image'))
                     ->collection('profile_image')
                     ->image(),
             ])->columns(2),
@@ -74,25 +86,26 @@ class JoinRequestResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('profile_image')
-                    ->label('الصورة')
+                    ->label(__('admin_panel.common.image'))
                     ->collection('profile_image')
                     ->circular(),
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('الاسم')
+                    ->label(__('admin_panel.common.name'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('phone_number')
-                    ->label('الجوال')
+                    ->label(__('admin_panel.common.mobile'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('pending_family_name')
-                    ->label('العائلة المطلوبة')
+                    ->label(__('admin_panel.join_request.requested_family'))
                     ->toggleable()
                     ->limit(40),
                 Tables\Columns\TextColumn::make('city')
-                    ->label('المدينة')
+                    ->label(__('admin_panel.common.city'))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
+                    ->label(__('admin_panel.common.status'))
+                    ->formatStateUsing(fn (JoinRequestStatus $state): string => $state->label())
                     ->badge()
                     ->color(fn (JoinRequestStatus $state) => match ($state) {
                         JoinRequestStatus::Pending => 'warning',
@@ -100,7 +113,7 @@ class JoinRequestResource extends Resource
                         JoinRequestStatus::Rejected => 'danger',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ الطلب')
+                    ->label(__('admin_panel.common.request_date'))
                     ->dateTime()
                     ->sortable(),
             ])
@@ -111,7 +124,7 @@ class JoinRequestResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('approve')
-                    ->label('قبول')
+                    ->label(__('admin_panel.join_request.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
@@ -119,19 +132,19 @@ class JoinRequestResource extends Resource
                         app(JoinRequestService::class)->approve($record, (int) auth()->id());
 
                         FilamentNotification::make()
-                            ->title('تم قبول الطلب وإنشاء حساب العضو')
+                            ->title(__('admin_panel.join_request.approved_notification'))
                             ->success()
                             ->send();
                     })
                     ->visible(fn (JoinRequest $record) => $record->status === JoinRequestStatus::Pending),
 
                 Tables\Actions\Action::make('reject')
-                    ->label('رفض')
+                    ->label(__('admin_panel.join_request.reject'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->form([
                         Forms\Components\Textarea::make('rejection_reason')
-                            ->label('سبب الرفض')
+                            ->label(__('admin_panel.common.rejection_reason'))
                             ->required(),
                     ])
                     ->action(function (JoinRequest $record, array $data) {
@@ -142,13 +155,12 @@ class JoinRequestResource extends Resource
                             'rejection_reason' => $data['rejection_reason'],
                         ]);
 
-                        // Notify user if they already have an account
                         if ($record->user) {
                             $record->user->notify(new JoinRequestRejected($data['rejection_reason']));
                         }
 
                         FilamentNotification::make()
-                            ->title('تم رفض الطلب')
+                            ->title(__('admin_panel.join_request.rejected_notification'))
                             ->danger()
                             ->send();
                     })

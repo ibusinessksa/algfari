@@ -4,19 +4,26 @@ namespace App\Filament\Widgets;
 
 use App\Models\User;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 
 class MemberRegistrationsChart extends ChartWidget
 {
-    protected static ?string $heading = 'تسجيل الأعضاء (آخر ١٤ يوماً)';
-
-    protected static ?string $description = 'عدد الحسابات الجديدة حسب يوم الإنشاء';
-
     protected static ?int $sort = 2;
 
     protected static string $color = 'primary';
 
     protected int|string|array $columnSpan = 'full';
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('admin_panel.widgets.member_reg_chart.heading');
+    }
+
+    public function getDescription(): string|Htmlable|null
+    {
+        return __('admin_panel.widgets.member_reg_chart.description');
+    }
 
     protected function getData(): array
     {
@@ -34,7 +41,7 @@ class MemberRegistrationsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'أعضاء جدد',
+                    'label' => __('admin_panel.widgets.member_reg_chart.dataset_label'),
                     'data' => $values,
                     'borderColor' => '#1B5E3B',
                     'backgroundColor' => 'rgba(27, 94, 59, 0.1)',

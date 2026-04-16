@@ -12,7 +12,7 @@ class ViewFamily extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'تفاصيل العائلة: '.$this->getRecord()->name;
+        return __('admin_panel.family.view_title', ['name' => $this->getRecord()->name]);
     }
 
     protected function getHeaderActions(): array
