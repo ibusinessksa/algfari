@@ -1,0 +1,147 @@
+name: Suggestions
+description: |-
+
+  APIs for submitting member suggestions.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/suggestions
+    metadata:
+      custom: []
+      groupName: Suggestions
+      groupDescription: |-
+
+        APIs for submitting member suggestions.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Submit Suggestion'
+      description: 'Submit a new suggestion to the administration.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      title:
+        custom: []
+        name: title
+        description: 'Title in Arabic and English.'
+        required: true
+        example:
+          ar: 'اقتراح جديد'
+          en: 'New suggestion'
+        type: object
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      title.ar:
+        custom: []
+        name: title.ar
+        description: 'Title in Arabic.'
+        required: true
+        example: 'اقتراح جديد'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      title.en:
+        custom: []
+        name: title.en
+        description: 'Title in English.'
+        required: true
+        example: 'New suggestion'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Description in Arabic and English.'
+        required: true
+        example:
+          ar: 'وصف الاقتراح'
+          en: 'Suggestion description'
+        type: object
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      description.ar:
+        custom: []
+        name: description.ar
+        description: 'Description in Arabic.'
+        required: true
+        example: 'وصف الاقتراح'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      description.en:
+        custom: []
+        name: description.en
+        description: 'Description in English.'
+        required: true
+        example: 'Suggestion description'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      title:
+        ar: 'اقتراح جديد'
+        en: 'New suggestion'
+      description:
+        ar: 'وصف الاقتراح'
+        en: 'Suggestion description'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "message": "تم تقديم الاقتراح بنجاح",
+            "suggestion": {
+              "id": 1,
+              "title": {"ar": "اقتراح جديد", "en": "New suggestion"},
+              "description": {"ar": "وصف الاقتراح", "en": "Suggestion description"},
+              "submitted_by": 1,
+              "status": "pending",
+              "created_at": "2026-04-13T10:00:00.000000Z",
+              "updated_at": "2026-04-13T10:00:00.000000Z"
+            }
+          }
+        headers: []
+        description: success
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {"title": ["The title field is required."]}
+          }
+        headers: []
+        description: 'validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
