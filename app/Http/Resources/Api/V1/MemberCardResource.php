@@ -27,8 +27,14 @@ class MemberCardResource extends JsonResource
             ),
             'workplace' => $this->workplace,
             'current_job' => $this->current_job,
-            'city' => $this->city,
-            'region' => $this->region,
+            'city' => $this->whenLoaded('city', fn () => $this->city ? [
+                'id' => $this->city->id,
+                'name' => $this->city->name,
+                'region' => [
+                    'id' => $this->city->region->id,
+                    'name' => $this->city->region->name,
+                ],
+            ] : null),
             'bio' => $this->bio,
             'gender' => $this->gender,
             'role' => $this->role,

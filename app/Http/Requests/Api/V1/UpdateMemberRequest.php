@@ -4,20 +4,33 @@ namespace App\Http\Requests\Api\V1;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMemberRequest extends FormRequest
 {
-    public function authorize(): bool
+    public function authorize(): bool|Response
     {
         $member = $this->route('member');
 
-        if (! $member instanceof User || ! $this->user()) {
+        if (! $member instanceof User) {
             return true;
         }
 
-        return $this->user()->id === $member->id
-            || $this->user()->role->value === 'admin';
+        $user = $this->user();
+        if (! $user) {
+            return Response::deny(__('messages.unauthorized'));
+        }
+
+        if ((int) $user->getKey() === (int) $member->getKey()) {
+            return true;
+        }
+
+        if ($user->role === UserRole::Admin) {
+            return true;
+        }
+
+        return Response::deny(__('messages.member_update_only_self_or_admin'));
     }
 
     public function rules(): array
@@ -30,15 +43,14 @@ class UpdateMemberRequest extends FormRequest
 
         return [
             'full_name' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'nullable', 'email', 'unique:users,email,' . $memberId],
+            'email' => ['sometimes', 'nullable', 'email', 'unique:users,email,'.$memberId],
             'family_id' => $isAdmin
                 ? ['sometimes', 'nullable', 'integer', 'exists:families,id']
                 : ['prohibited'],
             'pending_family_name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'workplace' => ['sometimes', 'nullable', 'string', 'max:255'],
             'current_job' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'city' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'region' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'city_id' => ['sometimes', 'nullable', 'integer', 'exists:cities,id'],
             'bio' => ['sometimes', 'nullable', 'string'],
             'social_links' => ['sometimes', 'nullable', 'array'],
             'profile_image' => ['sometimes', 'nullable', 'image', 'max:5120'],

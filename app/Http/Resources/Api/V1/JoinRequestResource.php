@@ -16,8 +16,15 @@ class JoinRequestResource extends JsonResource
             'national_id' => $this->national_id,
             'email' => $this->email,
             'pending_family_name' => $this->pending_family_name,
-            'city' => $this->city,
-            'region' => $this->region,
+            'region_id' => $this->region_id,
+            'region' => $this->whenLoaded('region', fn () => $this->region ? [
+                'id' => $this->region->id,
+                'country_id' => $this->region->country_id,
+                'name' => [
+                    'ar' => $this->region->getTranslation('name', 'ar'),
+                    'en' => $this->region->getTranslation('name', 'en'),
+                ],
+            ] : null),
             'status' => $this->status,
             'rejection_reason' => $this->rejection_reason,
             'profile_image' => $this->getFirstMediaUrl('profile_image'),

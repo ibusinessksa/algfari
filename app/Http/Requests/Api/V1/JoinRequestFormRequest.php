@@ -19,8 +19,7 @@ class JoinRequestFormRequest extends FormRequest
             'national_id' => ['nullable', 'string', 'max:20'],
             'email' => ['nullable', 'email'],
             'pending_family_name' => ['nullable', 'string', 'max:255'],
-            'city' => ['nullable', 'string', 'max:100'],
-            'region' => ['nullable', 'string', 'max:100'],
+            'region_id' => ['nullable', 'integer', 'exists:regions,id'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'profile_image' => ['nullable', 'image', 'max:5120'],
         ];

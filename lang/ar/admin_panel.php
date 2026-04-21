@@ -8,6 +8,7 @@ return [
         'finance' => 'المالية',
         'members' => 'إدارة الأعضاء',
         'communication' => 'التواصل',
+        'locations' => 'المواقع',
     ],
 
     'tabs' => [
@@ -78,6 +79,7 @@ return [
         'extra_info' => 'بيانات إضافية',
         'pending_family_name_field' => 'طلب عائلة (قيد المراجعة)',
         'currency_sar' => 'ر.س',
+        'country' => 'الدولة',
     ],
 
     'event' => [
@@ -159,6 +161,29 @@ return [
         'section' => 'بيانات المقترح',
         'submitted_by' => 'مقدم المقترح',
         'review' => 'مراجعة',
+    ],
+
+    'country' => [
+        'model' => 'دولة',
+        'plural' => 'الدول',
+        'section' => 'بيانات الدولة',
+        'code' => 'رمز الدولة',
+        'regions_count' => 'عدد المناطق',
+        'view_title' => 'تفاصيل الدولة: :name',
+    ],
+
+    'region' => [
+        'model' => 'منطقة',
+        'plural' => 'المناطق',
+        'section' => 'بيانات المنطقة',
+        'cities_count' => 'عدد المدن',
+        'view_title' => 'تفاصيل المنطقة: :name',
+    ],
+
+    'city' => [
+        'model' => 'مدينة',
+        'plural' => 'المدن',
+        'section' => 'بيانات المدينة',
     ],
 
     'members_relation' => [

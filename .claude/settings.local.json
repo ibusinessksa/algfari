@@ -7,7 +7,12 @@
       "Bash(ls node_modules/.bin/vite*)",
       "Bash(npm install *)",
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://algfari.test/)",
-      "Bash(curl -s http://algfari.test/)"
+      "Bash(curl -s http://algfari.test/)",
+      "Bash(php artisan *)",
+      "Read(//c/Users/hp/Herd/**)",
+      "Read(//c/Program Files/Herd/**)",
+      "Bash(where php *)",
+      "Bash(\"C:/Users/hp/.config/herd/bin/php.bat\" artisan *)"
     ]
   }
 }

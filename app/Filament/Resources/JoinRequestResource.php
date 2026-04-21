@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\JoinRequestStatus;
 use App\Filament\Resources\JoinRequestResource\Pages;
 use App\Models\JoinRequest;
+use App\Models\Region;
 use App\Notifications\JoinRequestRejected;
 use App\Services\JoinRequestService;
 use Filament\Forms;
@@ -13,12 +14,18 @@ use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class JoinRequestResource extends Resource
 {
     protected static ?string $model = JoinRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['region.country']);
+    }
 
     public static function getNavigationGroup(): ?string
     {
@@ -62,10 +69,18 @@ class JoinRequestResource extends Resource
                 Forms\Components\TextInput::make('pending_family_name')
                     ->label(__('admin_panel.join_request.family_name_pending'))
                     ->maxLength(255),
-                Forms\Components\TextInput::make('city')
-                    ->label(__('admin_panel.common.city')),
-                Forms\Components\TextInput::make('region')
-                    ->label(__('admin_panel.common.region')),
+                Forms\Components\Select::make('region_id')
+                    ->label(__('admin_panel.common.region'))
+                    ->options(fn (): array => Region::query()
+                        ->orderBy('name->'.self::formLocale())
+                        ->get()
+                        ->mapWithKeys(fn (Region $region): array => [
+                            $region->id => $region->getTranslation('name', self::formLocale())
+                                ?: $region->getTranslation('name', 'ar'),
+                        ])
+                        ->all())
+                    ->searchable()
+                    ->preload(),
                 Forms\Components\Select::make('status')
                     ->label(__('admin_panel.common.status'))
                     ->options(JoinRequestStatus::class)
@@ -100,9 +115,16 @@ class JoinRequestResource extends Resource
                     ->label(__('admin_panel.join_request.requested_family'))
                     ->toggleable()
                     ->limit(40),
-                Tables\Columns\TextColumn::make('city')
-                    ->label(__('admin_panel.common.city'))
-                    ->toggleable(),
+                Tables\Columns\TextColumn::make('region_id')
+                    ->label(__('admin_panel.common.region'))
+                    ->formatStateUsing(function (?int $state, JoinRequest $record): string {
+                        if (! $record->region) {
+                            return '—';
+                        }
+
+                        return (string) ($record->region->getTranslation('name', self::formLocale())
+                            ?: $record->region->getTranslation('name', 'ar'));
+                    }),
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('admin_panel.common.status'))
                     ->formatStateUsing(fn (JoinRequestStatus $state): string => $state->label())
@@ -129,7 +151,7 @@ class JoinRequestResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(function (JoinRequest $record) {
-                        app(JoinRequestService::class)->approve($record, (int) auth()->id());
+                        app(JoinRequestService::class)->approve($record, (string) auth()->id());
 
                         FilamentNotification::make()
                             ->title(__('admin_panel.join_request.approved_notification'))
@@ -175,5 +197,12 @@ class JoinRequestResource extends Resource
         return [
             'index' => Pages\ListJoinRequests::route('/'),
         ];
+    }
+
+    private static function formLocale(): string
+    {
+        $locale = app()->getLocale();
+
+        return in_array($locale, ['ar', 'en'], true) ? $locale : 'ar';
     }
 }

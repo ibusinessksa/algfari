@@ -38,8 +38,7 @@ class JoinRequestService
             'national_id' => $joinRequest->national_id,
             'email' => $joinRequest->email,
             'password' => $joinRequest->password ?? $passwordHash ?? Hash::make('changeme'),
-            'city' => $joinRequest->city,
-            'region' => $joinRequest->region,
+            'city_id' => null,
             'gender' => 'male',
             'status' => UserStatus::Active,
             'approved_by' => $reviewerId,
@@ -57,7 +56,7 @@ class JoinRequestService
             $this->familyRequestService->submitFromUser($user->fresh(), (string) $joinRequest->pending_family_name);
         }
 
-        $user->notify(new JoinRequestApproved());
+        $user->notify(new JoinRequestApproved);
 
         return $user->fresh();
     }

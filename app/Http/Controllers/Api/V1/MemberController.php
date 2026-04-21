@@ -77,7 +77,7 @@ class MemberController extends Controller
                 $needle = $request->input('family');
                 $q->whereHas('family', fn ($fq) => $fq->where('name', 'like', '%'.$needle.'%'));
             })
-            ->when($request->city, fn ($q, $v) => $q->where('city', $v))
+            ->when($request->city_id, fn ($q, $v) => $q->where('city_id', $v))
             ->when($request->gender, fn ($q, $v) => $q->where('gender', $v))
             ->when($request->boolean('is_featured'), fn ($q) => $q->where('is_featured', true))
             ->latest()
@@ -117,6 +117,7 @@ class MemberController extends Controller
     {
         $member->load([
             'family',
+            'city.region.country',
             'sons.linkedUser',
             'daughters.linkedUser',
         ]);
@@ -195,6 +196,7 @@ class MemberController extends Controller
         $member = $member->fresh();
         $member->load([
             'family',
+            'city.region.country',
             'sons.linkedUser',
             'daughters.linkedUser',
         ]);
@@ -230,6 +232,7 @@ class MemberController extends Controller
     {
         $member->load([
             'family',
+            'city.region',
             'sons.linkedUser',
             'daughters.linkedUser',
         ]);

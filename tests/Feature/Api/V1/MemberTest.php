@@ -4,9 +4,12 @@ namespace Tests\Feature\Api\V1;
 
 use App\Enums\FamilyRequestStatus;
 use App\Enums\UserStatus;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\Family;
 use App\Models\MemberDaughter;
 use App\Models\MemberSon;
+use App\Models\Region;
 use App\Models\User;
 use App\Notifications\AdminFamilyRequestSubmitted;
 use App\Support\FamilyNameNormalizer;
@@ -34,7 +37,7 @@ class MemberTest extends TestCase
             ->getJson('/api/v1/members');
 
         $response->assertOk()
-                 ->assertJsonStructure(['data']);
+            ->assertJsonStructure(['data']);
     }
 
     public function test_only_active_members_are_listed(): void
@@ -88,7 +91,7 @@ class MemberTest extends TestCase
             ->getJson("/api/v1/members/{$member->id}");
 
         $response->assertOk()
-                 ->assertJsonStructure(['data']);
+            ->assertJsonStructure(['data']);
     }
 
     public function test_show_member_includes_family_sons_and_daughters(): void
@@ -139,14 +142,73 @@ class MemberTest extends TestCase
 
     public function test_can_update_own_profile(): void
     {
+        $country = Country::create(['name' => ['en' => 'SA', 'ar' => 'SA'], 'code' => 'SA']);
+        $region = Region::create(['name' => ['en' => 'Riyadh', 'ar' => 'الرياض'], 'country_id' => $country->id]);
+        $city = City::create(['name' => ['en' => 'Riyadh', 'ar' => 'الرياض'], 'region_id' => $region->id]);
+
         $response = $this->actingAs($this->user, 'sanctum')
             ->putJson("/api/v1/members/{$this->user->id}", [
                 'full_name' => 'اسم جديد',
-                'city' => 'الرياض',
+                'city_id' => $city->id,
             ]);
 
         $response->assertOk();
         $this->assertEquals('اسم جديد', $this->user->fresh()->full_name);
+    }
+
+    public function test_can_update_own_profile_via_post_method_spoofing(): void
+    {
+        $country = Country::create(['name' => ['en' => 'SA', 'ar' => 'SA'], 'code' => 'SA']);
+        $region = Region::create(['name' => ['en' => 'Riyadh', 'ar' => 'الرياض'], 'country_id' => $country->id]);
+        $oldCity = City::create(['name' => ['en' => 'Old', 'ar' => 'Old'], 'region_id' => $region->id]);
+        $newCity = City::create(['name' => ['en' => 'New', 'ar' => 'New'], 'region_id' => $region->id]);
+
+        $user = User::factory()->create(['city_id' => $oldCity->id]);
+
+        $this->actingAs($user, 'sanctum')
+            ->post("/api/v1/members/{$user->id}", [
+                '_method' => 'PUT',
+                'city_id' => $newCity->id,
+            ])
+            ->assertOk();
+
+        $this->assertSame($newCity->id, $user->fresh()->city_id);
+    }
+
+    public function test_member_cannot_update_another_profile(): void
+    {
+        $country = Country::create(['name' => ['en' => 'SA', 'ar' => 'SA'], 'code' => 'SA']);
+        $region = Region::create(['name' => ['en' => 'Riyadh', 'ar' => 'الرياض'], 'country_id' => $country->id]);
+        $city = City::create(['name' => ['en' => 'Test', 'ar' => 'Test'], 'region_id' => $region->id]);
+        $other = User::factory()->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->putJson("/api/v1/members/{$other->id}", [
+                'city_id' => $city->id,
+            ]);
+
+        $response->assertForbidden()
+            ->assertJsonFragment(['message' => __('messages.member_update_only_self_or_admin')]);
+
+        $this->assertNotSame($city->id, $other->fresh()->city_id);
+    }
+
+    public function test_admin_can_update_another_member_profile(): void
+    {
+        $country = Country::create(['name' => ['en' => 'SA', 'ar' => 'SA'], 'code' => 'SA']);
+        $region = Region::create(['name' => ['en' => 'Riyadh', 'ar' => 'الرياض'], 'country_id' => $country->id]);
+        $oldCity = City::create(['name' => ['en' => 'Old', 'ar' => 'Old'], 'region_id' => $region->id]);
+        $newCity = City::create(['name' => ['en' => 'New', 'ar' => 'New'], 'region_id' => $region->id]);
+        $admin = User::factory()->admin()->create();
+        $member = User::factory()->create(['city_id' => $oldCity->id]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->putJson("/api/v1/members/{$member->id}", [
+                'city_id' => $newCity->id,
+            ]);
+
+        $response->assertOk();
+        $this->assertSame($newCity->id, $member->fresh()->city_id);
     }
 
     public function test_pending_family_name_does_not_auto_link_even_when_family_exists(): void
@@ -252,19 +314,19 @@ class MemberTest extends TestCase
             ->getJson("/api/v1/members/{$member->id}/card");
 
         $response->assertOk()
-                 ->assertJsonStructure([
-                     'data' => [
-                         'id',
-                         'full_name',
-                         'family',
-                         'workplace',
-                         'current_job',
-                         'city',
-                         'bio',
-                         'sons',
-                         'daughters',
-                     ],
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'full_name',
+                    'family',
+                    'workplace',
+                    'current_job',
+                    'city',
+                    'bio',
+                    'sons',
+                    'daughters',
+                ],
+            ]);
     }
 
     public function test_can_register_device(): void

@@ -26,14 +26,24 @@
             "key": "event_id",
             "value": "1",
             "type": "string"
+        },
+        {
+            "key": "country_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "region_id",
+            "value": "1",
+            "type": "string"
         }
     ],
     "info": {
         "name": "Family Tribe App API Documentation",
         "_postman_id": "0f7c1e86-e63d-4128-8045-6999fe80ac3f",
-        "description": "API for Family\/Tribe app (Laravel). Set {{token}} from login response (Bearer). User, member, news, event, offer, and join_request IDs are numeric. Notification IDs are UUID strings (Laravel `notifications.id`). Family linking: members send pending_family_name for admin review; family_id is admin-only. News: urgent items first; responses include is_urgent, time_from\/time_to, cover_image sizes, and gallery objects with url\/medium\/thumb.",
+        "description": "API for Family\/Tribe app (Laravel). Set {{token}} from login response (Bearer). User, member, news, event, offer, and join_request IDs are numeric. Notification IDs are UUID strings (Laravel `notifications.id`). **Locations:** `GET \/api\/v1\/regions` and `GET \/api\/v1\/cities` are public (no token); use `country_id`, `region_id`, `search`, `per_page`; names are `{ar,en}` JSON objects. Login (`POST \/auth\/login`): optional `device_token` + `platform` (`ios`\/`android`) to register push device. Join request (`POST \/auth\/join-request`): optional `region_id` only (no `city_id`). Family linking: members send pending_family_name for admin review; family_id is admin-only. News: urgent items first; responses include is_urgent, time_from\/time_to, cover_image sizes, and gallery objects with url\/medium\/thumb.",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
-        "version": "1.3.1"
+        "version": "1.4.2"
     },
     "item": [
         {
@@ -66,9 +76,9 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"login\":\"0551234567\",\"password\":\"secret123\"}"
+                            "raw": "{\"login\":\"0551234567\",\"password\":\"secret123\",\"device_token\":\"fcm-token-abc123xyz\",\"platform\":\"android\"}"
                         },
-                        "description": "Authenticate user with phone number or national ID.",
+                        "description": "Authenticate with phone or national ID. Optional `device_token` + `platform` (`ios`\/`android`) register the same FCM row as `POST \/devices` after success.",
                         "auth": {
                             "type": "noauth"
                         }
@@ -236,16 +246,10 @@
                                     "description": "Email address."
                                 },
                                 {
-                                    "key": "city",
-                                    "value": "\u0627\u0644\u0631\u064a\u0627\u0636",
+                                    "key": "region_id",
+                                    "value": "{{region_id}}",
                                     "type": "text",
-                                    "description": "City name."
-                                },
-                                {
-                                    "key": "region",
-                                    "value": "\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0631\u064a\u0627\u0636",
-                                    "type": "text",
-                                    "description": "Region name."
+                                    "description": "Optional: `regions.id` from List Regions."
                                 },
                                 {
                                     "key": "password",
@@ -275,7 +279,7 @@
                         {
                             "header": [],
                             "code": 201,
-                            "body": "{\n  \"message\": \"\u062a\u0645 \u062a\u0642\u062f\u064a\u0645 \u0637\u0644\u0628 \u0627\u0644\u0627\u0646\u0636\u0645\u0627\u0645 \u0628\u0646\u062c\u0627\u062d\",\n  \"join_request\": {\n    \"id\": 1,\n    \"full_name\": \"\u0645\u062d\u0645\u062f \u0623\u062d\u0645\u062f \u0627\u0644\u0642\u062d\u0637\u0627\u0646\u064a\",\n    \"phone_number\": \"0551234567\",\n    \"national_id\": \"1234567890\",\n    \"email\": \"mohammed@example.com\",\n    \"pending_family_name\": null,\n    \"city\": \"\u0627\u0644\u0631\u064a\u0627\u0636\",\n    \"region\": \"\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0631\u064a\u0627\u0636\",\n    \"status\": \"pending\",\n    \"rejection_reason\": null,\n    \"profile_image\": null,\n    \"profile_image_medium\": null,\n    \"profile_image_thumb\": null,\n    \"reviewed_at\": null,\n    \"created_at\": \"2026-04-13T10:00:00.000000Z\"\n  }\n}",
+                            "body": "{\n  \"message\": \"\u062a\u0645 \u062a\u0642\u062f\u064a\u0645 \u0637\u0644\u0628 \u0627\u0644\u0627\u0646\u0636\u0645\u0627\u0645 \u0628\u0646\u062c\u0627\u062d\",\n  \"join_request\": {\n    \"id\": 1,\n    \"full_name\": \"\u0645\u062d\u0645\u062f \u0623\u062d\u0645\u062f \u0627\u0644\u0642\u062d\u0637\u0627\u0646\u064a\",\n    \"phone_number\": \"0551234567\",\n    \"national_id\": \"1234567890\",\n    \"email\": \"mohammed@example.com\",\n    \"pending_family_name\": null,\n    \"region_id\": 1,\n    \"region\": {\n      \"id\": 1,\n      \"country_id\": 1,\n      \"name\": {\"ar\": \"\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0631\u064a\u0627\u0636\", \"en\": \"Riyadh Region\"}\n    },\n    \"status\": \"pending\",\n    \"rejection_reason\": null,\n    \"profile_image\": null,\n    \"profile_image_medium\": null,\n    \"profile_image_thumb\": null,\n    \"reviewed_at\": null,\n    \"created_at\": \"2026-04-13T10:00:00.000000Z\"\n  }\n}",
                             "name": "success"
                         }
                     ]
@@ -412,6 +416,134 @@
                             "code": 200,
                             "body": "{\"message\": \"\u062a\u0645 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c \u0628\u0646\u062c\u0627\u062d\"}",
                             "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Locations",
+            "description": "\nPublic read-only lists for region\/city pickers. No Authorization header required.",
+            "item": [
+                {
+                    "name": "List Regions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/regions",
+                            "query": [
+                                {
+                                    "key": "country_id",
+                                    "value": "{{country_id}}",
+                                    "description": "Optional: filter by country id.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Optional: search in region name (Arabic or English).",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "50",
+                                    "description": "Page size (1\u2013100, default 50).",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/regions?country_id={{country_id}}&per_page=50"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Paginated regions. Each row includes `cities_count` and nested `country` (`id`, `code`, `name` ar\/en). Sort: country_id then localized name.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"country_id\": 1,\n      \"name\": {\n        \"ar\": \"\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0631\u064a\u0627\u0636\",\n        \"en\": \"Riyadh Region\"\n      },\n      \"cities_count\": 12,\n      \"country\": {\n        \"id\": 1,\n        \"code\": \"SA\",\n        \"name\": {\n          \"ar\": \"\u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629\",\n          \"en\": \"Saudi Arabia\"\n        }\n      },\n      \"created_at\": \"2026-04-17T10:00:00.000000Z\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"http:\/\/algfari.test\/api\/v1\/regions?page=1\",\n    \"last\": \"http:\/\/algfari.test\/api\/v1\/regions?page=1\",\n    \"prev\": null,\n    \"next\": null\n  },\n  \"meta\": {\n    \"current_page\": 1,\n    \"last_page\": 1,\n    \"per_page\": 50,\n    \"total\": 1\n  }\n}",
+                            "name": "success"
+                        }
+                    ]
+                },
+                {
+                    "name": "List Cities",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/cities",
+                            "query": [
+                                {
+                                    "key": "region_id",
+                                    "value": "{{region_id}}",
+                                    "description": "Optional: filter by region id.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "country_id",
+                                    "value": "{{country_id}}",
+                                    "description": "Optional: filter by country (via region.country_id).",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Optional: search in city name (Arabic or English).",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "50",
+                                    "description": "Page size (1\u2013100, default 50).",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/cities?region_id={{region_id}}&per_page=50"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Paginated cities. Each row includes nested `region` and `region.country` with bilingual `name` objects.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"region_id\": 1,\n      \"name\": {\n        \"ar\": \"\u0627\u0644\u0631\u064a\u0627\u0636\",\n        \"en\": \"Riyadh\"\n      },\n      \"region\": {\n        \"id\": 1,\n        \"country_id\": 1,\n        \"name\": {\n          \"ar\": \"\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0631\u064a\u0627\u0636\",\n          \"en\": \"Riyadh Region\"\n        },\n        \"country\": {\n          \"id\": 1,\n          \"code\": \"SA\",\n          \"name\": {\n            \"ar\": \"\u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629\",\n            \"en\": \"Saudi Arabia\"\n          }\n        }\n      },\n      \"created_at\": \"2026-04-17T10:00:00.000000Z\"\n    }\n  ],\n  \"links\": {\n    \"first\": \"http:\/\/algfari.test\/api\/v1\/cities?page=1\",\n    \"last\": \"http:\/\/algfari.test\/api\/v1\/cities?page=1\",\n    \"prev\": null,\n    \"next\": null\n  },\n  \"meta\": {\n    \"current_page\": 1,\n    \"last_page\": 1,\n    \"per_page\": 50,\n    \"total\": 1\n  }\n}",
+                            "name": "success"
                         }
                     ]
                 }
@@ -557,7 +689,7 @@
                                     "id": "id",
                                     "key": "id",
                                     "value": "1",
-                                    "description": "Numeric member user ID."
+                                    "description": "Numeric member user id: must match `user.id` from Login (same Bearer token), unless the token belongs to an admin."
                                 }
                             ]
                         },
@@ -605,15 +737,15 @@
                                 },
                                 {
                                     "key": "workplace",
-                                    "value": "m",
+                                    "value": "\u0634\u0631\u0643\u0629 \u062a\u0642\u0646\u064a\u0629",
                                     "type": "text",
-                                    "description": "validation.max."
+                                    "description": "Workplace (optional, max 255)."
                                 },
                                 {
                                     "key": "current_job",
-                                    "value": "i",
+                                    "value": "\u0645\u0647\u0646\u062f\u0633 \u0628\u0631\u0645\u062c\u064a\u0627\u062a",
                                     "type": "text",
-                                    "description": "validation.max."
+                                    "description": "Current job (optional, max 255)."
                                 },
                                 {
                                     "key": "city",
@@ -645,7 +777,7 @@
                                 }
                             ]
                         },
-                        "description": "Update a member's profile information."
+                        "description": "Update a member's profile (multipart + `_method` PUT). The path id must be your own user id from Login, or you must be an admin; otherwise the API returns 403 with a clear message."
                     },
                     "response": [
                         {
@@ -653,6 +785,12 @@
                             "code": 200,
                             "body": "{\n  \"message\": \"\u062a\u0645 \u0627\u0644\u062a\u062d\u062f\u064a\u062b \u0628\u0646\u062c\u0627\u062d\",\n  \"user\": {\n    \"id\": 1,\n    \"full_name\": \"\u0645\u062d\u0645\u062f \u0623\u062d\u0645\u062f\",\n    \"phone_number\": \"0551234567\",\n    \"national_id\": \"1234567890\",\n    \"email\": \"mohammed@example.com\",\n    \"family\": null,\n    \"workplace\": null,\n    \"current_job\": null,\n    \"city\": \"\u0627\u0644\u0631\u064a\u0627\u0636\",\n    \"region\": \"\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0631\u064a\u0627\u0636\",\n    \"bio\": \"\u0645\u0637\u0648\u0631 \u0628\u0631\u0645\u062c\u064a\u0627\u062a\",\n    \"gender\": \"male\",\n    \"role\": \"member\",\n    \"status\": \"active\",\n    \"social_links\": null,\n    \"is_featured\": false,\n    \"profile_image\": null,\n    \"profile_image_medium\": null,\n    \"profile_image_thumb\": null,\n    \"created_at\": \"2026-04-01T10:00:00.000000Z\"\n  }\n}",
                             "name": "success"
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"message\": \"\u064a\u0645\u0643\u0646\u0643 \u062a\u062d\u062f\u064a\u062b \u0645\u0644\u0641\u0643 \u0627\u0644\u0634\u062e\u0635\u064a \u0641\u0642\u0637\u060c \u0623\u0648 \u064a\u062c\u0628 \u0623\u0646 \u062a\u0643\u0648\u0646 \u0645\u0633\u0624\u0648\u0644\u0627\u064b \u0644\u062a\u062d\u062f\u064a\u062b \u0645\u0644\u0641 \u0639\u0636\u0648 \u0622\u062e\u0631.\"}",
+                            "name": "forbidden (wrong member id)"
                         },
                         {
                             "header": [],

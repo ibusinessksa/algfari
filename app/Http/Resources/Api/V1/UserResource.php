@@ -28,8 +28,19 @@ class UserResource extends JsonResource
             ),
             'workplace' => $this->workplace,
             'current_job' => $this->current_job,
-            'city' => $this->city,
-            'region' => $this->region,
+            'city' => $this->whenLoaded('city', fn () => $this->city ? [
+                'id' => $this->city->id,
+                'name' => $this->city->name,
+                'region' => [
+                    'id' => $this->city->region->id,
+                    'name' => $this->city->region->name,
+                    'country' => [
+                        'id' => $this->city->region->country->id,
+                        'name' => $this->city->region->country->name,
+                        'code' => $this->city->region->country->code,
+                    ],
+                ],
+            ] : null),
             'bio' => $this->bio,
             'gender' => $this->gender,
             'role' => $this->role,

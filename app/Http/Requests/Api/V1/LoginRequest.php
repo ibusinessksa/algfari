@@ -16,6 +16,8 @@ class LoginRequest extends FormRequest
         return [
             'login' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'device_token' => ['nullable', 'string', 'required_with:platform'],
+            'platform' => ['nullable', 'string', 'in:ios,android', 'required_with:device_token'],
         ];
     }
 }

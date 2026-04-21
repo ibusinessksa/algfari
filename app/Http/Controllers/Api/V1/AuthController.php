@@ -15,6 +15,7 @@ use App\Http\Resources\Api\V1\JoinRequestResource;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Models\JoinRequest;
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Services\OtpService;
 use App\Support\PasswordResetSession;
 use Illuminate\Http\JsonResponse;
@@ -39,6 +40,8 @@ class AuthController extends Controller
      *
      * @bodyParam login string required Phone number or National ID. Example: 0551234567
      * @bodyParam password string required User password. Example: secret123
+     * @bodyParam device_token string Optional FCM token; if sent, `platform` is required. Example: fcm-token-abc123xyz
+     * @bodyParam platform string Optional `ios` or `android`; required with `device_token`. Example: android
      *
      * @response 200 scenario="success" {
      *   "user": {
@@ -78,6 +81,20 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('mobile')->plainTextToken;
+
+        if ($request->filled('device_token') && $request->filled('platform')) {
+            UserDevice::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'device_token' => $request->string('device_token')->toString(),
+                ],
+                [
+                    'platform' => $request->string('platform')->toString(),
+                    'is_active' => true,
+                    'last_used_at' => now(),
+                ]
+            );
+        }
 
         return response()->json([
             'user' => new UserResource($user),
@@ -161,8 +178,7 @@ class AuthController extends Controller
      * @bodyParam national_id string National ID number. Example: 1234567890
      * @bodyParam email string Email address. Example: mohammed@example.com
      * @bodyParam pending_family_name string Optional free-text family name (stored until admin links the member after approval).
-     * @bodyParam city string City name. Example: الرياض
-     * @bodyParam region string Region name. Example: منطقة الرياض
+     * @bodyParam region_id int Optional linked region id (`regions.id`). Example: 1
      * @bodyParam password string required Password (min 6 chars). Example: secret123
      * @bodyParam password_confirmation string required Password confirmation. Example: secret123
      * @bodyParam profile_image file Profile image (max 5MB, image format).
@@ -176,8 +192,8 @@ class AuthController extends Controller
      *     "national_id": "1234567890",
      *     "email": "mohammed@example.com",
      *     "pending_family_name": null,
-     *     "city": "الرياض",
-     *     "region": "منطقة الرياض",
+     *     "region_id": 1,
+     *     "region": {"id": 1, "country_id": 1, "name": {"ar": "منطقة الرياض", "en": "Riyadh Region"}},
      *     "status": "pending",
      *     "rejection_reason": null,
      *     "profile_image": null,
@@ -198,6 +214,8 @@ class AuthController extends Controller
             $joinRequest->addMediaFromRequest('profile_image')
                 ->toMediaCollection('profile_image');
         }
+
+        $joinRequest->load('region');
 
         return response()->json([
             'message' => __('join_request.submitted'),
