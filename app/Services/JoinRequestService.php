@@ -7,7 +7,9 @@ use App\Enums\UserStatus;
 use App\Models\JoinRequest;
 use App\Models\User;
 use App\Notifications\JoinRequestApproved;
+use App\Notifications\JoinRequestRejected;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 class JoinRequestService
 {
@@ -38,8 +40,8 @@ class JoinRequestService
             'national_id' => $joinRequest->national_id,
             'email' => $joinRequest->email,
             'password' => $joinRequest->password ?? $passwordHash ?? Hash::make('changeme'),
-            'city' => $joinRequest->city,
-            'region' => $joinRequest->region,
+            'city_id' => null,
+            'region_id' => $joinRequest->region_id,
             'gender' => 'male',
             'status' => UserStatus::Active,
             'approved_by' => $reviewerId,
@@ -57,7 +59,7 @@ class JoinRequestService
             $this->familyRequestService->submitFromUser($user->fresh(), (string) $joinRequest->pending_family_name);
         }
 
-        $user->notify(new JoinRequestApproved());
+        $user->notify(new JoinRequestApproved);
 
         return $user->fresh();
     }
@@ -70,5 +72,12 @@ class JoinRequestService
             'reviewed_at' => now(),
             'rejection_reason' => $reason,
         ]);
+
+        if ($joinRequest->user) {
+            $joinRequest->user->notify(new JoinRequestRejected($reason));
+        } elseif (filled($joinRequest->email)) {
+            Notification::route('mail', $joinRequest->email)
+                ->notify(new JoinRequestRejected($reason, $joinRequest->full_name));
+        }
     }
 }

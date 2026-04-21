@@ -8,6 +8,7 @@ return [
         'finance' => 'Finance',
         'members' => 'Member management',
         'communication' => 'Communication',
+        'locations' => 'Locations',
     ],
 
     'tabs' => [
@@ -78,6 +79,7 @@ return [
         'extra_info' => 'Additional information',
         'pending_family_name_field' => 'Family name (pending review)',
         'currency_sar' => 'SAR',
+        'country' => 'Country',
     ],
 
     'event' => [
@@ -159,6 +161,29 @@ return [
         'section' => 'Suggestion details',
         'submitted_by' => 'Submitted by',
         'review' => 'Review',
+    ],
+
+    'country' => [
+        'model' => 'Country',
+        'plural' => 'Countries',
+        'section' => 'Country details',
+        'code' => 'Country code',
+        'regions_count' => 'Regions count',
+        'view_title' => 'Country details: :name',
+    ],
+
+    'region' => [
+        'model' => 'Region',
+        'plural' => 'Regions',
+        'section' => 'Region details',
+        'cities_count' => 'Cities count',
+        'view_title' => 'Region details: :name',
+    ],
+
+    'city' => [
+        'model' => 'City',
+        'plural' => 'Cities',
+        'section' => 'City details',
     ],
 
     'members_relation' => [

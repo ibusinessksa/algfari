@@ -24,6 +24,7 @@ class LatestJoinRequests extends BaseWidget
         return $table
             ->query(
                 JoinRequest::query()
+                    ->with('region')
                     ->where('status', 'pending')
                     ->latest()
                     ->limit(5)
@@ -33,8 +34,17 @@ class LatestJoinRequests extends BaseWidget
                     ->label(__('admin_panel.common.name')),
                 Tables\Columns\TextColumn::make('phone_number')
                     ->label(__('admin_panel.common.mobile')),
-                Tables\Columns\TextColumn::make('city')
-                    ->label(__('admin_panel.common.city')),
+                Tables\Columns\TextColumn::make('region_id')
+                    ->label(__('admin_panel.common.region'))
+                    ->formatStateUsing(function (?int $state, JoinRequest $record): string {
+                        if (! $record->region) {
+                            return '—';
+                        }
+                        $loc = in_array(app()->getLocale(), ['ar', 'en'], true) ? app()->getLocale() : 'ar';
+
+                        return (string) ($record->region->getTranslation('name', $loc)
+                            ?: $record->region->getTranslation('name', 'ar'));
+                    }),
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('admin_panel.common.status'))
                     ->formatStateUsing(fn (JoinRequestStatus $state): string => $state->label())

@@ -6,9 +6,13 @@ use App\Enums\Gender;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\City;
+use App\Models\Region;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -104,13 +108,29 @@ class UserResource extends Resource
                     ->label(__('admin_panel.common.current_job'))
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('city')
-                    ->label(__('admin_panel.common.city'))
-                    ->maxLength(100),
-
-                Forms\Components\TextInput::make('region')
+                Forms\Components\Select::make('region_id')
                     ->label(__('admin_panel.common.region'))
-                    ->maxLength(100),
+                    ->options(fn (): array => Region::query()
+                        ->orderBy('name->'.self::formLocale())
+                        ->get()
+                        ->mapWithKeys(fn (Region $region): array => [
+                            $region->id => $region->getTranslation('name', self::formLocale())
+                                ?: $region->getTranslation('name', 'ar'),
+                        ])
+                        ->all())
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set) => $set('city_id', null))
+                    ->default(fn ($record) => $record?->region_id ?? $record?->city?->region_id),
+
+                Forms\Components\Select::make('city_id')
+                    ->label(__('admin_panel.common.city'))
+                    ->options(fn (Get $get) => $get('region_id')
+                        ? City::where('region_id', $get('region_id'))->pluck('name', 'id')
+                        : City::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
 
                 Forms\Components\Textarea::make('bio')
                     ->label(__('admin_panel.common.bio'))
@@ -196,5 +216,12 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    private static function formLocale(): string
+    {
+        $locale = app()->getLocale();
+
+        return in_array($locale, ['ar', 'en'], true) ? $locale : 'ar';
     }
 }

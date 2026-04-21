@@ -30,28 +30,27 @@ class FundController extends Controller
      * @response 200 scenario="success" {
      *   "data": [
      *     {
-     *       "id": "e5f6a7b8-9012-3cde-f456-789012345def",
+     *       "id": 1,
      *       "amount": "500.00",
      *       "transaction_type": "donation",
-     *       "description": "تبرع شهري لصندوق العائلة",
+     *       "description": {"ar": "تبرع شهري لصندوق العائلة", "en": "Monthly donation"},
      *       "status": "approved",
-     *       "approved_at": "2026-04-10T12:00:00.000000Z",
-     *       "contributor": {
-     *         "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
-     *         "full_name": "سعد القحطاني"
-     *       },
      *       "receipt": "http://algfari.test/storage/media/20/receipt.pdf",
+     *       "receipt_thumb": null,
+     *       "contributor": {"id": 2, "full_name": "سعد القحطاني"},
+     *       "approved_at": "2026-04-10T12:00:00.000000Z",
      *       "created_at": "2026-04-09T10:00:00.000000Z"
      *     },
      *     {
-     *       "id": "f6a7b8c9-0123-4def-a567-890123456ef0",
+     *       "id": 2,
      *       "amount": "200.00",
      *       "transaction_type": "expense",
-     *       "description": "مصاريف إصلاح مجلس العائلة",
+     *       "description": {"ar": "مصاريف إصلاح مجلس العائلة", "en": "Repair expenses"},
      *       "status": "approved",
-     *       "approved_at": "2026-04-11T14:00:00.000000Z",
-     *       "contributor": null,
      *       "receipt": null,
+     *       "receipt_thumb": null,
+     *       "contributor": null,
+     *       "approved_at": "2026-04-11T14:00:00.000000Z",
      *       "created_at": "2026-04-11T09:00:00.000000Z"
      *     }
      *   ],

@@ -18,7 +18,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class User extends Authenticatable implements HasMedia, HasName
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, InteractsWithMedia;
+    use HasApiTokens, HasFactory, InteractsWithMedia, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'full_name',
@@ -30,8 +30,8 @@ class User extends Authenticatable implements HasMedia, HasName
         'pending_family_name',
         'workplace',
         'current_job',
-        'city',
-        'region',
+        'city_id',
+        'region_id',
         'bio',
         'gender',
         'role',
@@ -65,16 +65,16 @@ class User extends Authenticatable implements HasMedia, HasName
         $this->addMediaCollection('profile_image')->singleFile();
     }
 
-    public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
+    public function registerMediaConversions(?\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-             ->width(150)
-             ->height(150)
-             ->sharpen(10);
+            ->width(150)
+            ->height(150)
+            ->sharpen(10);
 
         $this->addMediaConversion('medium')
-             ->width(400)
-             ->height(400);
+            ->width(400)
+            ->height(400);
     }
 
     public function approvedBy(): BelongsTo
@@ -85,6 +85,16 @@ class User extends Authenticatable implements HasMedia, HasName
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
+    }
+
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
     }
 
     public function sons(): HasMany

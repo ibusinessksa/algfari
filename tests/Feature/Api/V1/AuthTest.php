@@ -4,8 +4,10 @@ namespace Tests\Feature\Api\V1;
 
 use App\Enums\OtpPurpose;
 use App\Enums\UserStatus;
+use App\Models\Country;
 use App\Models\JoinRequest;
 use App\Models\OtpCode;
+use App\Models\Region;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +30,46 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertOk()
-                 ->assertJsonStructure(['user', 'token']);
+            ->assertJsonStructure(['user', 'token']);
+    }
+
+    public function test_login_with_device_token_registers_user_device(): void
+    {
+        $user = User::factory()->create([
+            'phone_number' => '0551234567',
+            'status' => UserStatus::Active,
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'login' => '0551234567',
+            'password' => 'password',
+            'device_token' => 'fcm-token-abc123xyz',
+            'platform' => 'android',
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('user_devices', [
+            'user_id' => $user->id,
+            'device_token' => 'fcm-token-abc123xyz',
+            'platform' => 'android',
+        ]);
+    }
+
+    public function test_login_requires_platform_when_device_token_sent(): void
+    {
+        User::factory()->create([
+            'phone_number' => '0551234567',
+            'status' => UserStatus::Active,
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'login' => '0551234567',
+            'password' => 'password',
+            'device_token' => 'fcm-token-only',
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['platform']);
     }
 
     public function test_user_can_login_with_national_id(): void
@@ -44,7 +85,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertOk()
-                 ->assertJsonStructure(['user', 'token']);
+            ->assertJsonStructure(['user', 'token']);
     }
 
     public function test_login_fails_with_wrong_password(): void
@@ -107,7 +148,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertOk()
-                 ->assertJson(['verified' => true]);
+            ->assertJson(['verified' => true]);
     }
 
     public function test_expired_otp_fails_verification(): void
@@ -131,24 +172,35 @@ class AuthTest extends TestCase
 
     public function test_join_request_can_be_submitted(): void
     {
+        $country = Country::create([
+            'name' => ['ar' => 'اختبار', 'en' => 'Testland'],
+            'code' => 'TX',
+        ]);
+        $region = Region::create([
+            'country_id' => $country->id,
+            'name' => ['ar' => 'منطقة تجريبية', 'en' => 'Test Region'],
+        ]);
+
         $response = $this->postJson('/api/v1/auth/join-request', [
             'full_name' => 'محمد أحمد',
             'phone_number' => '0551234567',
-            'password' => 'secret123',
-            'password_confirmation' => 'secret123',
-            'gender' => 'male',
+            'password' => 'Secret123',
+            'password_confirmation' => 'Secret123',
             'pending_family_name' => 'عائلة المُرشّد',
+            'region_id' => $region->id,
         ]);
 
         $response->assertCreated()
-                 ->assertJsonStructure(['message', 'join_request'])
-                 ->assertJsonPath('join_request.pending_family_name', 'عائلة المُرشّد');
+            ->assertJsonStructure(['message', 'join_request'])
+            ->assertJsonPath('join_request.pending_family_name', 'عائلة المُرشّد')
+            ->assertJsonPath('join_request.region_id', $region->id);
 
         $joinRequest = JoinRequest::first();
         $this->assertNotNull($joinRequest);
         $this->assertSame('عائلة المُرشّد', $joinRequest->pending_family_name);
+        $this->assertSame($region->id, $joinRequest->region_id);
         $this->assertTrue(
-            Hash::check('secret123', $joinRequest->getRawOriginal('password'))
+            Hash::check('Secret123', $joinRequest->getRawOriginal('password'))
         );
     }
 
@@ -213,7 +265,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertUnprocessable()
-                 ->assertJsonValidationErrors(['phone_number']);
+            ->assertJsonValidationErrors(['phone_number']);
     }
 
     public function test_change_password(): void
@@ -261,6 +313,6 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/v1/auth/login', []);
 
         $response->assertUnprocessable()
-                 ->assertJsonValidationErrors(['login', 'password']);
+            ->assertJsonValidationErrors(['login', 'password']);
     }
 }

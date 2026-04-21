@@ -24,8 +24,7 @@ class JoinRequest extends Model implements HasMedia
         'email',
         'pending_family_name',
         'password',
-        'city',
-        'region',
+        'region_id',
         'status',
         'reviewed_by',
         'reviewed_at',
@@ -46,21 +45,26 @@ class JoinRequest extends Model implements HasMedia
         $this->addMediaCollection('profile_image')->singleFile();
     }
 
-    public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
+    public function registerMediaConversions(?\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-             ->width(150)
-             ->height(150)
-             ->sharpen(10);
+            ->width(150)
+            ->height(150)
+            ->sharpen(10);
 
         $this->addMediaConversion('medium')
-             ->width(400)
-             ->height(400);
+            ->width(400)
+            ->height(400);
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
     }
 
     public function reviewer(): BelongsTo

@@ -15,6 +15,7 @@ use App\Http\Resources\Api\V1\JoinRequestResource;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Models\JoinRequest;
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Services\OtpService;
 use App\Support\PasswordResetSession;
 use Illuminate\Http\JsonResponse;
@@ -39,10 +40,12 @@ class AuthController extends Controller
      *
      * @bodyParam login string required Phone number or National ID. Example: 0551234567
      * @bodyParam password string required User password. Example: secret123
+     * @bodyParam device_token string Optional FCM token; if sent, `platform` is required. Example: fcm-token-abc123xyz
+     * @bodyParam platform string Optional `ios` or `android`; required with `device_token`. Example: android
      *
      * @response 200 scenario="success" {
      *   "user": {
-     *     "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+     *     "id": 1,
      *     "full_name": "محمد القحطاني",
      *     "phone_number": "0551234567",
      *     "national_id": "1234567890",
@@ -53,7 +56,10 @@ class AuthController extends Controller
      *     "role": "member",
      *     "status": "active",
      *     "is_featured": false,
-     *     "profile_image": null
+     *     "profile_image": null,
+     *     "profile_image_medium": null,
+     *     "profile_image_thumb": null,
+     *     "created_at": "2026-04-01T10:00:00.000000Z"
      *   },
      *   "token": "1|a2b3c4d5e6f7g8h9i0jklmnopqrstuvwxyz"
      * }
@@ -63,10 +69,10 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $user = User::where('phone_number', $request->login)
-                     ->orWhere('national_id', $request->login)
-                     ->first();
+            ->orWhere('national_id', $request->login)
+            ->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json(['message' => __('auth.failed')], 401);
         }
 
@@ -75,6 +81,20 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('mobile')->plainTextToken;
+
+        if ($request->filled('device_token') && $request->filled('platform')) {
+            UserDevice::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'device_token' => $request->string('device_token')->toString(),
+                ],
+                [
+                    'platform' => $request->string('platform')->toString(),
+                    'is_active' => true,
+                    'last_used_at' => now(),
+                ]
+            );
+        }
 
         return response()->json([
             'user' => new UserResource($user),
@@ -133,7 +153,7 @@ class AuthController extends Controller
             $purpose
         );
 
-        if (!$valid) {
+        if (! $valid) {
             return response()->json(['message' => __('otp.invalid')], 422);
         }
 
@@ -153,29 +173,33 @@ class AuthController extends Controller
      *
      * @unauthenticated
      *
-     * @bodyParam full_name string required Full name of the applicant. Example: محمد أحمد القحطاني
-     * @bodyParam phone_number string required Phone number. Example: 0551234567
-     * @bodyParam national_id string National ID number. Example: 1234567890
-     * @bodyParam email string Email address. Example: mohammed@example.com
-     * @bodyParam pending_family_name string Optional free-text family name (stored until admin links the member after approval).
-     * @bodyParam city string City name. Example: الرياض
-     * @bodyParam region string Region name. Example: منطقة الرياض
-     * @bodyParam password string required Password (min 6 chars). Example: secret123
-     * @bodyParam password_confirmation string required Password confirmation. Example: secret123
+     * @bodyParam full_name string required Full name (Arabic/Latin letters, numbers, spaces, . ' -). Min 3 chars. Example: محمد أحمد القحطاني
+     * @bodyParam phone_number string required Saudi mobile: 10 digits starting with 05, or +9665… / 9665… (normalized to 05…). Example: 0551234567
+     * @bodyParam national_id string Optional. 10 digits, must start with 1 or 2. Example: 1234567890
+     * @bodyParam email string Optional unique email (not used by another member or pending join request). Example: mohammed@example.com
+     * @bodyParam pending_family_name string Optional free-text family name (min 2 chars when sent). Stored until admin links the member after approval.
+     * @bodyParam region_id int required Must exist in `regions.id`. Example: 1
+     * @bodyParam password string required Min 8 characters, must include letters and numbers. Example: Secret123
+     * @bodyParam password_confirmation string required Must match `password`. Example: Secret123
      * @bodyParam profile_image file Profile image (max 5MB, image format).
      *
      * @response 201 scenario="success" {
      *   "message": "تم تقديم طلب الانضمام بنجاح",
      *   "join_request": {
-     *     "id": "a1b2c3d4-5678-9abc-def0-123456789abc",
+     *     "id": 1,
      *     "full_name": "محمد أحمد القحطاني",
      *     "phone_number": "0551234567",
      *     "national_id": "1234567890",
      *     "email": "mohammed@example.com",
-     *     "pending_family_name": "الجربوع",
-     *     "city": "الرياض",
-     *     "region": "منطقة الرياض",
+     *     "pending_family_name": null,
+     *     "region_id": 1,
+     *     "region": {"id": 1, "country_id": 1, "name": {"ar": "منطقة الرياض", "en": "Riyadh Region"}},
      *     "status": "pending",
+     *     "rejection_reason": null,
+     *     "profile_image": null,
+     *     "profile_image_medium": null,
+     *     "profile_image_thumb": null,
+     *     "reviewed_at": null,
      *     "created_at": "2026-04-13T10:00:00.000000Z"
      *   }
      * }
@@ -188,8 +212,10 @@ class AuthController extends Controller
 
         if ($request->hasFile('profile_image')) {
             $joinRequest->addMediaFromRequest('profile_image')
-                        ->toMediaCollection('profile_image');
+                ->toMediaCollection('profile_image');
         }
+
+        $joinRequest->load('region');
 
         return response()->json([
             'message' => __('join_request.submitted'),
@@ -248,7 +274,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return response()->json(['message' => __('password.incorrect')], 422);
         }
 

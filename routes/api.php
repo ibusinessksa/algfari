@@ -1,16 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CityController;
+use App\Http\Controllers\Api\V1\EventController;
+use App\Http\Controllers\Api\V1\FundController;
 use App\Http\Controllers\Api\V1\MemberController;
 use App\Http\Controllers\Api\V1\NewsController;
-use App\Http\Controllers\Api\V1\EventController;
-use App\Http\Controllers\Api\V1\OfferController;
-use App\Http\Controllers\Api\V1\FundController;
-use App\Http\Controllers\Api\V1\SuggestionController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\OfferController;
+use App\Http\Controllers\Api\V1\RegionController;
+use App\Http\Controllers\Api\V1\SuggestionController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
+
+    // ── Public reference (locations) ──
+    Route::get('regions', [RegionController::class, 'index']);
+    Route::get('cities', [CityController::class, 'index']);
 
     // ── Public (Auth) ──
     Route::prefix('auth')->group(function () {
@@ -20,9 +26,9 @@ Route::prefix('v1')->group(function () {
         Route::post('join-request', [AuthController::class, 'joinRequest']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
         Route::put('change-password', [AuthController::class, 'changePassword'])
-             ->middleware('auth:sanctum');
+            ->middleware('auth:sanctum');
         Route::post('logout', [AuthController::class, 'logout'])
-             ->middleware('auth:sanctum');
+            ->middleware('auth:sanctum');
     });
 
     // ── Protected ──
