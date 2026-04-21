@@ -118,6 +118,7 @@ class MemberController extends Controller
         $member->load([
             'family',
             'city.region.country',
+            'region.country',
             'sons.linkedUser',
             'daughters.linkedUser',
         ]);
@@ -197,6 +198,7 @@ class MemberController extends Controller
         $member->load([
             'family',
             'city.region.country',
+            'region.country',
             'sons.linkedUser',
             'daughters.linkedUser',
         ]);

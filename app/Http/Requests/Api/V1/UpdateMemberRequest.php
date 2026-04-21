@@ -51,6 +51,7 @@ class UpdateMemberRequest extends FormRequest
             'workplace' => ['sometimes', 'nullable', 'string', 'max:255'],
             'current_job' => ['sometimes', 'nullable', 'string', 'max:255'],
             'city_id' => ['sometimes', 'nullable', 'integer', 'exists:cities,id'],
+            'region_id' => ['sometimes', 'nullable', 'integer', 'exists:regions,id'],
             'bio' => ['sometimes', 'nullable', 'string'],
             'social_links' => ['sometimes', 'nullable', 'array'],
             'profile_image' => ['sometimes', 'nullable', 'image', 'max:5120'],

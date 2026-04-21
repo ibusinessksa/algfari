@@ -28,6 +28,16 @@ class UserResource extends JsonResource
             ),
             'workplace' => $this->workplace,
             'current_job' => $this->current_job,
+            'region_id' => $this->region_id,
+            'region' => $this->whenLoaded('region', fn () => $this->region ? [
+                'id' => $this->region->id,
+                'name' => $this->region->name,
+                'country' => [
+                    'id' => $this->region->country->id,
+                    'name' => $this->region->country->name,
+                    'code' => $this->region->country->code,
+                ],
+            ] : null),
             'city' => $this->whenLoaded('city', fn () => $this->city ? [
                 'id' => $this->city->id,
                 'name' => $this->city->name,

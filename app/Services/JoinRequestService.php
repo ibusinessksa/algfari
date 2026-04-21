@@ -39,6 +39,7 @@ class JoinRequestService
             'email' => $joinRequest->email,
             'password' => $joinRequest->password ?? $passwordHash ?? Hash::make('changeme'),
             'city_id' => null,
+            'region_id' => $joinRequest->region_id,
             'gender' => 'male',
             'status' => UserStatus::Active,
             'approved_by' => $reviewerId,

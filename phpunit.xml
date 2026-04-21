@@ -22,8 +22,13 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
+        <!-- force=true: override DB_* already set by .env / shell (otherwise PHPUnit keeps family_tribe_app). -->
+        <env name="DB_CONNECTION" force="true" value="mysql"/>
+        <env name="DB_HOST" force="true" value="127.0.0.1"/>
+        <env name="DB_PORT" force="true" value="3306"/>
+        <env name="DB_DATABASE" force="true" value="family_tribe_test"/>
+        <env name="DB_USERNAME" force="true" value="root"/>
+        <env name="DB_PASSWORD" force="true" value="1234"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>

@@ -110,13 +110,19 @@ class UserResource extends Resource
 
                 Forms\Components\Select::make('region_id')
                     ->label(__('admin_panel.common.region'))
-                    ->options(fn () => Region::all()->pluck('name', 'id'))
+                    ->options(fn (): array => Region::query()
+                        ->orderBy('name->'.self::formLocale())
+                        ->get()
+                        ->mapWithKeys(fn (Region $region): array => [
+                            $region->id => $region->getTranslation('name', self::formLocale())
+                                ?: $region->getTranslation('name', 'ar'),
+                        ])
+                        ->all())
                     ->searchable()
                     ->preload()
                     ->live()
                     ->afterStateUpdated(fn (Set $set) => $set('city_id', null))
-                    ->dehydrated(false)
-                    ->default(fn ($record) => $record?->city?->region_id),
+                    ->default(fn ($record) => $record?->region_id ?? $record?->city?->region_id),
 
                 Forms\Components\Select::make('city_id')
                     ->label(__('admin_panel.common.city'))
@@ -210,5 +216,12 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    private static function formLocale(): string
+    {
+        $locale = app()->getLocale();
+
+        return in_array($locale, ['ar', 'en'], true) ? $locale : 'ar';
     }
 }

@@ -31,6 +31,7 @@ class User extends Authenticatable implements HasMedia, HasName
         'workplace',
         'current_job',
         'city_id',
+        'region_id',
         'bio',
         'gender',
         'role',
@@ -89,6 +90,11 @@ class User extends Authenticatable implements HasMedia, HasName
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
     }
 
     public function sons(): HasMany
