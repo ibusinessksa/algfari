@@ -3,7 +3,9 @@
 namespace App\Notifications;
 
 use App\Models\Family;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class FamilyRequestApprovedForMember extends Notification
@@ -16,7 +18,20 @@ class FamilyRequestApprovedForMember extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return array_values(array_filter([
+            'database',
+            filled($notifiable instanceof User ? $notifiable->email : null) ? 'mail' : null,
+        ]));
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $name = $notifiable instanceof User ? $notifiable->full_name : __('emails.guest');
+
+        return (new MailMessage)
+            ->subject(__('emails.family_request_approved_subject'))
+            ->greeting(__('emails.family_request_approved_greeting', ['name' => $name]))
+            ->line(__('emails.family_request_approved_line', ['family' => $this->family->name]));
     }
 
     public function toArray(object $notifiable): array

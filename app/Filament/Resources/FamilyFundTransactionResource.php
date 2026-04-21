@@ -6,6 +6,7 @@ use App\Enums\TransactionStatus;
 use App\Enums\TransactionType;
 use App\Filament\Resources\FamilyFundTransactionResource\Pages;
 use App\Models\FamilyFundTransaction;
+use App\Notifications\FamilyFundTransactionReviewed;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -132,22 +133,30 @@ class FamilyFundTransactionResource extends Resource
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->action(fn (FamilyFundTransaction $record) => $record->update([
-                        'status' => TransactionStatus::Approved,
-                        'approved_by' => auth()->id(),
-                        'approved_at' => now(),
-                    ]))
+                    ->action(function (FamilyFundTransaction $record) {
+                        $record->update([
+                            'status' => TransactionStatus::Approved,
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                        ]);
+                        $record->load('contributor');
+                        $record->contributor?->notify(new FamilyFundTransactionReviewed($record->fresh(), approved: true));
+                    })
                     ->visible(fn (FamilyFundTransaction $record) => $record->status === TransactionStatus::Pending),
                 Tables\Actions\Action::make('reject')
                     ->label(__('admin_panel.family_fund.reject'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn (FamilyFundTransaction $record) => $record->update([
-                        'status' => TransactionStatus::Rejected,
-                        'approved_by' => auth()->id(),
-                        'approved_at' => now(),
-                    ]))
+                    ->action(function (FamilyFundTransaction $record) {
+                        $record->update([
+                            'status' => TransactionStatus::Rejected,
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                        ]);
+                        $record->load('contributor');
+                        $record->contributor?->notify(new FamilyFundTransactionReviewed($record->fresh(), approved: false));
+                    })
                     ->visible(fn (FamilyFundTransaction $record) => $record->status === TransactionStatus::Pending),
                 Tables\Actions\EditAction::make(),
             ])

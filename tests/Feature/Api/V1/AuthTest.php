@@ -184,8 +184,8 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/v1/auth/join-request', [
             'full_name' => 'محمد أحمد',
             'phone_number' => '0551234567',
-            'password' => 'secret123',
-            'password_confirmation' => 'secret123',
+            'password' => 'Secret123',
+            'password_confirmation' => 'Secret123',
             'pending_family_name' => 'عائلة المُرشّد',
             'region_id' => $region->id,
         ]);
@@ -200,7 +200,7 @@ class AuthTest extends TestCase
         $this->assertSame('عائلة المُرشّد', $joinRequest->pending_family_name);
         $this->assertSame($region->id, $joinRequest->region_id);
         $this->assertTrue(
-            Hash::check('secret123', $joinRequest->getRawOriginal('password'))
+            Hash::check('Secret123', $joinRequest->getRawOriginal('password'))
         );
     }
 

@@ -173,14 +173,14 @@ class AuthController extends Controller
      *
      * @unauthenticated
      *
-     * @bodyParam full_name string required Full name of the applicant. Example: محمد أحمد القحطاني
-     * @bodyParam phone_number string required Phone number. Example: 0551234567
-     * @bodyParam national_id string National ID number. Example: 1234567890
-     * @bodyParam email string Email address. Example: mohammed@example.com
-     * @bodyParam pending_family_name string Optional free-text family name (stored until admin links the member after approval).
-     * @bodyParam region_id int Optional linked region id (`regions.id`). Example: 1
-     * @bodyParam password string required Password (min 6 chars). Example: secret123
-     * @bodyParam password_confirmation string required Password confirmation. Example: secret123
+     * @bodyParam full_name string required Full name (Arabic/Latin letters, numbers, spaces, . ' -). Min 3 chars. Example: محمد أحمد القحطاني
+     * @bodyParam phone_number string required Saudi mobile: 10 digits starting with 05, or +9665… / 9665… (normalized to 05…). Example: 0551234567
+     * @bodyParam national_id string Optional. 10 digits, must start with 1 or 2. Example: 1234567890
+     * @bodyParam email string Optional unique email (not used by another member or pending join request). Example: mohammed@example.com
+     * @bodyParam pending_family_name string Optional free-text family name (min 2 chars when sent). Stored until admin links the member after approval.
+     * @bodyParam region_id int required Must exist in `regions.id`. Example: 1
+     * @bodyParam password string required Min 8 characters, must include letters and numbers. Example: Secret123
+     * @bodyParam password_confirmation string required Must match `password`. Example: Secret123
      * @bodyParam profile_image file Profile image (max 5MB, image format).
      *
      * @response 201 scenario="success" {

@@ -7,7 +7,9 @@ use App\Enums\UserStatus;
 use App\Models\JoinRequest;
 use App\Models\User;
 use App\Notifications\JoinRequestApproved;
+use App\Notifications\JoinRequestRejected;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 class JoinRequestService
 {
@@ -70,5 +72,12 @@ class JoinRequestService
             'reviewed_at' => now(),
             'rejection_reason' => $reason,
         ]);
+
+        if ($joinRequest->user) {
+            $joinRequest->user->notify(new JoinRequestRejected($reason));
+        } elseif (filled($joinRequest->email)) {
+            Notification::route('mail', $joinRequest->email)
+                ->notify(new JoinRequestRejected($reason, $joinRequest->full_name));
+        }
     }
 }

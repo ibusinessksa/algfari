@@ -6,7 +6,6 @@ use App\Enums\JoinRequestStatus;
 use App\Filament\Resources\JoinRequestResource\Pages;
 use App\Models\JoinRequest;
 use App\Models\Region;
-use App\Notifications\JoinRequestRejected;
 use App\Services\JoinRequestService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -170,16 +169,11 @@ class JoinRequestResource extends Resource
                             ->required(),
                     ])
                     ->action(function (JoinRequest $record, array $data) {
-                        $record->update([
-                            'status' => JoinRequestStatus::Rejected,
-                            'reviewed_by' => auth()->id(),
-                            'reviewed_at' => now(),
-                            'rejection_reason' => $data['rejection_reason'],
-                        ]);
-
-                        if ($record->user) {
-                            $record->user->notify(new JoinRequestRejected($data['rejection_reason']));
-                        }
+                        app(JoinRequestService::class)->reject(
+                            $record,
+                            (string) auth()->id(),
+                            $data['rejection_reason'],
+                        );
 
                         FilamentNotification::make()
                             ->title(__('admin_panel.join_request.rejected_notification'))
