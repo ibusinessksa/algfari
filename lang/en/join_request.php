@@ -19,6 +19,7 @@ return [
     'validation' => [
         'full_name_format' => 'The name may only include Arabic or Latin letters, numbers, spaces, and . \' -',
         'phone_format' => 'Enter a valid Saudi mobile number (10 digits starting with 05, e.g. 0551234567).',
+        'phone_pending_request' => 'There is a pending join request for this phone number.',
         'phone_taken' => 'This mobile number is already registered or has a pending join request.',
         'national_id_format' => 'National ID must be 10 digits and start with 1 or 2.',
         'national_id_taken' => 'This national ID is already registered or used in another pending join request.',

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Enums\JoinRequestStatus;
 use App\Enums\OtpPurpose;
 use App\Enums\UserStatus;
 use App\Models\Country;
@@ -129,6 +130,81 @@ class AuthTest extends TestCase
             'phone_number' => '0551234567',
             'purpose' => OtpPurpose::Register->value,
         ]);
+    }
+
+    public function test_send_otp_register_fails_when_phone_has_existing_join_request(): void
+    {
+        $country = Country::create([
+            'name' => ['ar' => 'اختبار', 'en' => 'Testland'],
+            'code' => 'TX',
+        ]);
+        $region = Region::create([
+            'country_id' => $country->id,
+            'name' => ['ar' => 'منطقة تجريبية', 'en' => 'Test Region'],
+        ]);
+
+        $this->postJson('/api/v1/auth/join-request', [
+            'full_name' => 'محمد أحمد',
+            'phone_number' => '0551234567',
+            'password' => 'Secret123',
+            'password_confirmation' => 'Secret123',
+            'pending_family_name' => 'عائلة المُرشّد',
+            'region_id' => $region->id,
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/send-otp', [
+            'phone_number' => '0551234567',
+            'purpose' => 'register',
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['phone_number']);
+    }
+
+    public function test_send_otp_register_allows_phone_when_join_request_is_approved(): void
+    {
+        $country = Country::create([
+            'name' => ['ar' => 'اختبار', 'en' => 'Testland'],
+            'code' => 'TX',
+        ]);
+        $region = Region::create([
+            'country_id' => $country->id,
+            'name' => ['ar' => 'منطقة تجريبية', 'en' => 'Test Region'],
+        ]);
+
+        $this->postJson('/api/v1/auth/join-request', [
+            'full_name' => 'محمد أحمد',
+            'phone_number' => '0551234567',
+            'password' => 'Secret123',
+            'password_confirmation' => 'Secret123',
+            'pending_family_name' => 'عائلة المُرشّد',
+            'region_id' => $region->id,
+        ])->assertCreated();
+
+        JoinRequest::query()->update(['status' => JoinRequestStatus::Approved->value]);
+
+        $response = $this->postJson('/api/v1/auth/send-otp', [
+            'phone_number' => '0551234567',
+            'purpose' => 'register',
+        ]);
+
+        $response->assertOk();
+    }
+
+    public function test_send_otp_register_fails_when_phone_already_exists_in_users(): void
+    {
+        User::factory()->create([
+            'phone_number' => '0551234567',
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/send-otp', [
+            'phone_number' => '0551234567',
+            'purpose' => 'register',
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['phone_number'])
+            ->assertJsonPath('errors.phone_number.0', __('auth.phone_already_registered'));
     }
 
     public function test_otp_can_be_verified(): void
