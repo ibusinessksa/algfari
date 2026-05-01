@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\NewsController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OfferController;
 use App\Http\Controllers\Api\V1\RegionController;
+use App\Http\Controllers\Api\V1\SearchController;
 use App\Http\Controllers\Api\V1\SuggestionController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,5 +63,8 @@ Route::prefix('v1')->group(function () {
 
         // Device registration
         Route::post('devices', [MemberController::class, 'registerDevice']);
+
+        // Global Search
+        Route::get('search', [SearchController::class, 'index']);
     });
 });
