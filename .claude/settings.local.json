@@ -12,7 +12,10 @@
       "Read(//c/Users/hp/Herd/**)",
       "Read(//c/Program Files/Herd/**)",
       "Bash(where php *)",
-      "Bash(\"C:/Users/hp/.config/herd/bin/php.bat\" artisan *)"
+      "Bash(\"C:/Users/hp/.config/herd/bin/php.bat\" artisan *)",
+      "PowerShell(php artisan vendor:publish --tag=filament-google-maps-config 2>&1)",
+      "PowerShell(php -l app/Filament/Resources/EventResource.php)",
+      "PowerShell(php -l app/Models/Event.php)"
     ]
   }
 }

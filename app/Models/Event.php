@@ -60,6 +60,42 @@ class Event extends Model implements HasMedia
              ->height(400);
     }
 
+    public static function getLatLngAttributes(): array
+    {
+        return [
+            'lat' => 'location_lat',
+            'lng' => 'location_lng',
+        ];
+    }
+
+    public static function getComputedLocation(): string
+    {
+        return 'location';
+    }
+
+    public function getLocationAttribute(): array
+    {
+        return [
+            'lat' => $this->location_lat !== null ? (float) $this->location_lat : null,
+            'lng' => $this->location_lng !== null ? (float) $this->location_lng : null,
+        ];
+    }
+
+    public function setLocationAttribute(?array $location): void
+    {
+        if (is_array($location)) {
+            $this->attributes['location_lat'] = $location['lat'] ?? null;
+            $this->attributes['location_lng'] = $location['lng'] ?? null;
+        }
+    }
+
+    public static function getLocationCasts(): array
+    {
+        return [
+            'location' => 'array',
+        ];
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

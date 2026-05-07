@@ -65,6 +65,8 @@ return [
         'service_address' => 'عنوان الخدمة',
         'offered_by' => 'مقدم العرض',
         'location_name' => 'اسم الموقع',
+        'location' => 'الموقع',
+        'use_my_location' => 'استخدم موقعي الحالي',
         'latitude' => 'خط العرض',
         'longitude' => 'خط الطول',
         'start_date' => 'تاريخ البداية',

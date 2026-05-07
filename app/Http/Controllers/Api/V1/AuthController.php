@@ -34,11 +34,11 @@ class AuthController extends Controller
     /**
      * Login
      *
-     * Authenticate user with phone number or national ID.
+     * Authenticate user with phone number, national ID, or email.
      *
      * @unauthenticated
      *
-     * @bodyParam login string required Phone number or National ID. Example: 0551234567
+     * @bodyParam login string required Phone number, National ID, or email. Example: 0551234567
      * @bodyParam password string required User password. Example: secret123
      * @bodyParam device_token string Optional FCM token; if sent, `platform` is required. Example: fcm-token-abc123xyz
      * @bodyParam platform string Optional `ios` or `android`; required with `device_token`. Example: android
@@ -70,6 +70,7 @@ class AuthController extends Controller
     {
         $user = User::where('phone_number', $request->login)
             ->orWhere('national_id', $request->login)
+            ->orWhere('email', $request->login)
             ->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {

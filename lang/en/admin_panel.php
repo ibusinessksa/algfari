@@ -65,6 +65,8 @@ return [
         'service_address' => 'Service address',
         'offered_by' => 'Offered by',
         'location_name' => 'Location name',
+        'location' => 'Location',
+        'use_my_location' => 'Use my current location',
         'latitude' => 'Latitude',
         'longitude' => 'Longitude',
         'start_date' => 'Start date',
