@@ -8,6 +8,7 @@ use App\Enums\UserStatus;
 use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -137,6 +138,16 @@ class User extends Authenticatable implements HasMedia, HasName
     public function fundTransactions(): HasMany
     {
         return $this->hasMany(FamilyFundTransaction::class, 'contributor_id');
+    }
+
+    public function favorites(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'user_id', 'favorited_user_id')->withTimestamps();
+    }
+
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'favorited_user_id', 'user_id')->withTimestamps();
     }
 
     public function getFilamentName(): string

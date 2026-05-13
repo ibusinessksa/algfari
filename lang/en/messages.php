@@ -18,4 +18,7 @@ return [
     'family_request_not_pending' => 'This family request is no longer pending.',
     'family_already_assigned' => 'You are already linked to a family. Remove the link via an administrator before requesting a new one.',
     'member_update_only_self_or_admin' => 'You can only update your own member profile, or you must be an administrator.',
+    'added_to_favorites' => 'Added to favorites successfully.',
+    'removed_from_favorites' => 'Removed from favorites successfully.',
+    'already_favorited' => 'This member is already in your favorites.',
 ];

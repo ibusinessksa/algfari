@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\EventController;
+use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FundController;
 use App\Http\Controllers\Api\V1\MemberController;
 use App\Http\Controllers\Api\V1\NewsController;
@@ -42,6 +43,11 @@ Route::prefix('v1')->group(function () {
         // Members
         Route::apiResource('members', MemberController::class)->only(['index', 'show', 'update']);
         Route::get('members/{member}/card', [MemberController::class, 'card']);
+        Route::post('members/{member}/favorite', [FavoriteController::class, 'store']);
+        Route::delete('members/{member}/favorite', [FavoriteController::class, 'destroy']);
+
+        // Favorites
+        Route::get('favorites', [FavoriteController::class, 'index']);
 
         // News
         Route::apiResource('news', NewsController::class)->only(['index', 'show']);
