@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MemberSon extends Model
+class MemberChild extends Model
 {
-    /** @use HasFactory<\Database\Factories\MemberSonFactory> */
     use HasFactory;
 
     protected $fillable = [
         'user_id',
         'name',
+        'gender',
+        'birthday',
         'linked_user_id',
         'sort_order',
     ];
@@ -22,6 +23,7 @@ class MemberSon extends Model
     {
         return [
             'sort_order' => 'integer',
+            'birthday' => 'date',
         ];
     }
 

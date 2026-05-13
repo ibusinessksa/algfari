@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Models\MemberSon|\App\Models\MemberDaughter
+ * @mixin \App\Models\MemberChild
  */
 class MemberChildResource extends JsonResource
 {
@@ -15,6 +15,8 @@ class MemberChildResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->displayName(),
+            'gender' => $this->gender,
+            'birthday' => $this->birthday?->toDateString(),
             'linked_user_id' => $this->linked_user_id,
             'linked_user' => $this->when(
                 $this->relationLoaded('linkedUser') && $this->linkedUser !== null,

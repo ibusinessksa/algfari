@@ -61,7 +61,9 @@ class UserResource extends JsonResource
             'profile_image_medium' => $this->getFirstMediaUrl('profile_image', 'medium'),
             'profile_image_thumb' => $this->getFirstMediaUrl('profile_image', 'thumb'),
             'sons' => $this->whenLoaded('sons', fn () => MemberChildResource::collection($this->sons)),
+            'sons_count' => $this->whenLoaded('sons', fn () => $this->sons->count()),
             'daughters' => $this->whenLoaded('daughters', fn () => MemberChildResource::collection($this->daughters)),
+            'daughters_count' => $this->whenLoaded('daughters', fn () => $this->daughters->count()),
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

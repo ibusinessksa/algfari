@@ -7,8 +7,7 @@ use App\Enums\UserStatus;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Family;
-use App\Models\MemberDaughter;
-use App\Models\MemberSon;
+use App\Models\MemberChild;
 use App\Models\Region;
 use App\Models\User;
 use App\Notifications\AdminFamilyRequestSubmitted;
@@ -109,20 +108,20 @@ class MemberTest extends TestCase
             'current_job' => 'غير محدد',
         ]);
 
-        MemberSon::factory()->create([
+        MemberChild::factory()->male()->create([
             'user_id' => $member->id,
             'name' => 'عبدالعزيز',
             'linked_user_id' => null,
             'sort_order' => 0,
         ]);
-        MemberSon::factory()->create([
+        MemberChild::factory()->male()->create([
             'user_id' => $member->id,
             'name' => null,
             'linked_user_id' => $linkedChild->id,
             'sort_order' => 1,
         ]);
-        MemberDaughter::factory()->create(['user_id' => $member->id, 'name' => 'سعداء']);
-        MemberDaughter::factory()->create(['user_id' => $member->id, 'name' => 'لطيفة']);
+        MemberChild::factory()->female()->create(['user_id' => $member->id, 'name' => 'سعداء']);
+        MemberChild::factory()->female()->create(['user_id' => $member->id, 'name' => 'لطيفة']);
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->getJson("/api/v1/members/{$member->id}");

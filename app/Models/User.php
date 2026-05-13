@@ -100,14 +100,19 @@ class User extends Authenticatable implements HasMedia, HasName
         return $this->belongsTo(Region::class);
     }
 
+    public function children(): HasMany
+    {
+        return $this->hasMany(MemberChild::class)->orderBy('sort_order');
+    }
+
     public function sons(): HasMany
     {
-        return $this->hasMany(MemberSon::class)->orderBy('sort_order');
+        return $this->hasMany(MemberChild::class)->where('gender', 'male')->orderBy('sort_order');
     }
 
     public function daughters(): HasMany
     {
-        return $this->hasMany(MemberDaughter::class)->orderBy('sort_order');
+        return $this->hasMany(MemberChild::class)->where('gender', 'female')->orderBy('sort_order');
     }
 
     public function familyRequests(): HasMany
