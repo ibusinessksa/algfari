@@ -40,6 +40,7 @@ class User extends Authenticatable implements HasMedia, HasName
         'is_featured',
         'approved_by',
         'approved_at',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -54,6 +55,7 @@ class User extends Authenticatable implements HasMedia, HasName
             'social_links' => 'array',
             'is_featured' => 'boolean',
             'approved_at' => 'datetime',
+            'email_verified_at' => 'datetime',
             'gender' => Gender::class,
             'role' => UserRole::class,
             'status' => UserStatus::class,

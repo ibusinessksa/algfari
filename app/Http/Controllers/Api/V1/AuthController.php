@@ -10,7 +10,9 @@ use App\Http\Requests\Api\V1\JoinRequestFormRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\ResetPasswordRequest;
 use App\Http\Requests\Api\V1\SendOtpRequest;
+use App\Http\Requests\Api\V1\VerifyEmailCodeRequest;
 use App\Http\Requests\Api\V1\VerifyOtpRequest;
+use App\Services\EmailVerificationService;
 use App\Http\Resources\Api\V1\JoinRequestResource;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Models\JoinRequest;
@@ -29,7 +31,10 @@ use Illuminate\Support\Facades\Hash;
  */
 class AuthController extends Controller
 {
-    public function __construct(private OtpService $otpService) {}
+    public function __construct(
+        private OtpService $otpService,
+        private EmailVerificationService $emailVerificationService,
+    ) {}
 
     /**
      * Login
@@ -68,9 +73,13 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('phone_number', $request->login)
-            ->orWhere('national_id', $request->login)
-            ->orWhere('email', $request->login)
+        $login = $request->string('login')->toString();
+
+        $isEmailLogin = filter_var($login, FILTER_VALIDATE_EMAIL) !== false;
+
+        $user = User::where('phone_number', $login)
+            ->orWhere('national_id', $login)
+            ->orWhere('email', $login)
             ->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
@@ -79,6 +88,10 @@ class AuthController extends Controller
 
         if ($user->status !== UserStatus::Active) {
             return response()->json(['message' => __('auth.inactive')], 403);
+        }
+
+        if ($isEmailLogin && ! $user->email_verified_at) {
+            return response()->json(['message' => __('auth.email_not_verified')], 403);
         }
 
         $token = $user->createToken('mobile')->plainTextToken;
@@ -282,6 +295,56 @@ class AuthController extends Controller
         $user->update(['password' => $request->password]);
 
         return response()->json(['message' => __('password.changed')]);
+    }
+
+    /**
+     * Send Email Verification Code
+     *
+     * Send a 6-digit verification code to the authenticated user's email address.
+     *
+     * @response 200 {"message": "تم إرسال رمز التحقق إلى بريدك الإلكتروني."}
+     * @response 400 {"message": "لا يوجد بريد إلكتروني مرتبط بحسابك."}
+     * @response 422 {"message": "البريد الإلكتروني مُحقَّق مسبقًا."}
+     */
+    public function sendEmailVerification(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->email) {
+            return response()->json(['message' => __('auth.no_email_on_file')], 400);
+        }
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => __('auth.email_already_verified')], 422);
+        }
+
+        $this->emailVerificationService->send($user);
+
+        return response()->json(['message' => __('auth.email_verification_sent')]);
+    }
+
+    /**
+     * Verify Email Code
+     *
+     * Verify the 6-digit code sent to the authenticated user's email.
+     *
+     * @bodyParam code string required The 6-digit verification code. Example: 482910
+     *
+     * @response 200 {"message": "تم التحقق من البريد الإلكتروني بنجاح."}
+     * @response 422 {"message": "رمز التحقق غير صحيح أو منتهي الصلاحية."}
+     */
+    public function verifyEmailCode(VerifyEmailCodeRequest $request): JsonResponse
+    {
+        $verified = $this->emailVerificationService->verify(
+            $request->user(),
+            $request->string('code')->toString()
+        );
+
+        if (! $verified) {
+            return response()->json(['message' => __('auth.email_verification_invalid')], 422);
+        }
+
+        return response()->json(['message' => __('auth.email_verification_success')]);
     }
 
     /**

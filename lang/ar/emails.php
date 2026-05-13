@@ -28,4 +28,10 @@ return [
     'fund_transaction_line_amount' => 'المبلغ: :amount ريال',
     'fund_transaction_approved_line' => 'تم اعتماد المعاملة.',
     'fund_transaction_rejected_line' => 'تم رفض المعاملة.',
+
+    'email_verification_subject' => 'تحقق من بريدك الإلكتروني',
+    'email_verification_greeting' => 'مرحبًا :name،',
+    'email_verification_line' => 'استخدم الرمز أدناه للتحقق من بريدك الإلكتروني. صالح لمدة 10 دقائق.',
+    'email_verification_expiry' => 'ينتهي هذا الرمز بعد 10 دقائق.',
+    'email_verification_ignore' => 'إذا لم تطلب هذا، يمكنك تجاهل هذا البريد.',
 ];

@@ -28,6 +28,10 @@ Route::prefix('v1')->group(function () {
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
         Route::put('change-password', [AuthController::class, 'changePassword'])
             ->middleware('auth:sanctum');
+        Route::post('send-email-verification', [AuthController::class, 'sendEmailVerification'])
+            ->middleware('auth:sanctum');
+        Route::post('verify-email', [AuthController::class, 'verifyEmailCode'])
+            ->middleware('auth:sanctum');
         Route::post('logout', [AuthController::class, 'logout'])
             ->middleware('auth:sanctum');
     });

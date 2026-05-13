@@ -28,4 +28,10 @@ return [
     'fund_transaction_line_amount' => 'Amount: :amount SAR',
     'fund_transaction_approved_line' => 'Your transaction has been approved.',
     'fund_transaction_rejected_line' => 'Your transaction has been rejected.',
+
+    'email_verification_subject' => 'Verify your email address',
+    'email_verification_greeting' => 'Hello :name,',
+    'email_verification_line' => 'Use the code below to verify your email address. It is valid for 10 minutes.',
+    'email_verification_expiry' => 'This code expires in 10 minutes.',
+    'email_verification_ignore' => 'If you did not request this, you can safely ignore this email.',
 ];
