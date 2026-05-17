@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\TestFcmController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\EventController;
 use App\Http\Controllers\Api\V1\FavoriteController;
@@ -13,13 +14,21 @@ use App\Http\Controllers\Api\V1\OfferController;
 use App\Http\Controllers\Api\V1\RegionController;
 use App\Http\Controllers\Api\V1\SearchController;
 use App\Http\Controllers\Api\V1\SuggestionController;
+use App\Http\Controllers\Api\V1\VisitorController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
 
+    // ── Test FCM (dev only) ──
+    Route::post('test-fcm', [TestFcmController::class, 'send']);
+
     // ── Public reference (locations) ──
     Route::get('regions', [RegionController::class, 'index']);
     Route::get('cities', [CityController::class, 'index']);
+
+    // ── Visitors ──
+    Route::post('visitors', [VisitorController::class, 'increment']);
+    Route::get('visitors', [VisitorController::class, 'show']);
 
     // ── Public (Auth) ──
     Route::prefix('auth')->group(function () {
@@ -66,6 +75,7 @@ Route::prefix('v1')->group(function () {
         Route::get('fund/summary', [FundController::class, 'summary']);
 
         // Suggestions
+        Route::get('suggestions', [SuggestionController::class, 'index']);
         Route::post('suggestions', [SuggestionController::class, 'store']);
 
         // Notifications

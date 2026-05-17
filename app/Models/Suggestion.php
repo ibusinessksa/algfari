@@ -24,6 +24,10 @@ class Suggestion extends Model
         'reviewed_at',
     ];
 
+    protected $attributes = [
+        'status' => 'under_review',
+    ];
+
     protected function casts(): array
     {
         return [

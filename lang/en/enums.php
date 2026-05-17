@@ -62,7 +62,9 @@ return [
         'general' => 'General',
     ],
     'suggestion_status' => [
-        'pending' => 'Pending',
-        'reviewed' => 'Reviewed',
+        'under_review' => 'Under review',
+        'accepted' => 'Accepted',
+        'rejected' => 'Rejected',
+        'in_progress' => 'In progress',
     ],
 ];

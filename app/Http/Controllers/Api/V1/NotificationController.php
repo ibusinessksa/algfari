@@ -52,10 +52,13 @@ class NotificationController extends Controller
             ->paginate(20);
 
         $notifications->getCollection()->transform(function ($n) use ($locale) {
+            $title = $n->data['title_translations'] ?? $n->data['title'] ?? '';
+            $body = $n->data['body_translations'] ?? $n->data['body'] ?? '';
+
             return [
                 'id' => $n->id,
-                'title' => $n->data['title'][$locale] ?? $n->data['title']['ar'] ?? '',
-                'body' => $n->data['body'][$locale] ?? $n->data['body']['ar'] ?? '',
+                'title' => is_array($title) ? ($title[$locale] ?? $title['ar'] ?? '') : $title,
+                'body' => is_array($body) ? ($body[$locale] ?? $body['ar'] ?? '') : $body,
                 'type' => $n->data['type'] ?? null,
                 'is_read' => !is_null($n->read_at),
                 'created_at' => $n->created_at->toISOString(),

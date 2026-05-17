@@ -62,7 +62,9 @@ return [
         'general' => 'عام',
     ],
     'suggestion_status' => [
-        'pending' => 'قيد المراجعة',
-        'reviewed' => 'تمت المراجعة',
+        'under_review' => 'قيد الدراسة',
+        'accepted' => 'مقبول',
+        'rejected' => 'مرفوض',
+        'in_progress' => 'قيد التنفيذ',
     ],
 ];

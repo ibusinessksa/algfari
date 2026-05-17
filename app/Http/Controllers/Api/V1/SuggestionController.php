@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\SuggestionStatus;
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreSuggestionRequest;
 use App\Models\Suggestion;
+use App\Models\User;
+use App\Notifications\AdminSuggestionSubmitted;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * @group Suggestions
@@ -43,6 +50,48 @@ class SuggestionController extends Controller
      *   "errors": {"title": ["The title field is required."]}
      * }
      */
+    /**
+     * List My Suggestions
+     *
+     * Get a paginated list of the authenticated user's submitted suggestions, optionally filtered by status.
+     *
+     * @queryParam status string Filter by status. Allowed values: under_review, accepted, rejected, in_progress. Example: under_review
+     * @queryParam per_page integer Items per page (default 20). Example: 20
+     *
+     * @response 200 scenario="success" {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "title": {"ar": "اقتراح جديد", "en": "New suggestion"},
+     *       "description": {"ar": "وصف الاقتراح", "en": "Suggestion description"},
+     *       "status": "under_review",
+     *       "admin_response": null,
+     *       "reviewed_at": null,
+     *       "created_at": "2026-05-17T10:00:00.000000Z"
+     *     }
+     *   ],
+     *   "current_page": 1,
+     *   "last_page": 1,
+     *   "per_page": 20,
+     *   "total": 1
+     * }
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => ['nullable', Rule::enum(SuggestionStatus::class)],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $suggestions = Suggestion::query()
+            ->where('submitted_by', $request->user()->id)
+            ->when($validated['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->latest()
+            ->paginate($validated['per_page'] ?? 20);
+
+        return response()->json($suggestions);
+    }
+
     public function store(StoreSuggestionRequest $request): JsonResponse
     {
         $suggestion = Suggestion::create([
@@ -50,6 +99,11 @@ class SuggestionController extends Controller
             'description' => $request->description,
             'submitted_by' => $request->user()->id,
         ]);
+
+        User::query()
+            ->where('role', UserRole::Admin)
+            ->where('status', UserStatus::Active)
+            ->each(fn (User $admin) => $admin->notify(new AdminSuggestionSubmitted($suggestion)));
 
         return response()->json([
             'message' => __('messages.suggestion_submitted'),

@@ -93,10 +93,7 @@ class SuggestionResource extends Resource
                     ->label(__('admin_panel.common.status'))
                     ->formatStateUsing(fn (SuggestionStatus $state): string => $state->label())
                     ->badge()
-                    ->color(fn (SuggestionStatus $state) => match ($state) {
-                        SuggestionStatus::Pending => 'warning',
-                        SuggestionStatus::Reviewed => 'success',
-                    }),
+                    ->color(fn (SuggestionStatus $state) => $state->color()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('admin_panel.common.date'))
                     ->dateTime()
@@ -113,19 +110,20 @@ class SuggestionResource extends Resource
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->color('primary')
                     ->form([
-                        Forms\Components\Textarea::make('admin_response')
-                            ->label(__('admin_panel.common.admin_response'))
+                        Forms\Components\Select::make('status')
+                            ->label(__('admin_panel.common.status'))
+                            ->options(collect(SuggestionStatus::cases())
+                                ->mapWithKeys(fn (SuggestionStatus $s) => [$s->value => $s->label()])
+                                ->all())
                             ->required(),
                     ])
                     ->action(function (Suggestion $record, array $data) {
                         $record->update([
-                            'admin_response' => $data['admin_response'],
-                            'status' => SuggestionStatus::Reviewed,
+                            'status' => SuggestionStatus::from($data['status']),
                             'reviewed_by' => auth()->id(),
                             'reviewed_at' => now(),
                         ]);
-                    })
-                    ->visible(fn (Suggestion $record) => $record->status === SuggestionStatus::Pending),
+                    }),
                 Tables\Actions\ViewAction::make(),
             ]);
     }
