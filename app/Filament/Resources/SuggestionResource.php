@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\SuggestionStatus;
 use App\Filament\Resources\SuggestionResource\Pages;
 use App\Models\Suggestion;
+use App\Notifications\SuggestionStatusUpdated;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -118,11 +119,18 @@ class SuggestionResource extends Resource
                             ->required(),
                     ])
                     ->action(function (Suggestion $record, array $data) {
+                        $newStatus = SuggestionStatus::from($data['status']);
+                        $statusChanged = $record->status !== $newStatus;
+
                         $record->update([
-                            'status' => SuggestionStatus::from($data['status']),
+                            'status' => $newStatus,
                             'reviewed_by' => auth()->id(),
                             'reviewed_at' => now(),
                         ]);
+
+                        if ($statusChanged && $record->submitter) {
+                            $record->submitter->notify(new SuggestionStatusUpdated($record->fresh()));
+                        }
                     }),
                 Tables\Actions\ViewAction::make(),
             ]);
