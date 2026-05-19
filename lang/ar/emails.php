@@ -34,4 +34,15 @@ return [
     'email_verification_line' => 'استخدم الرمز أدناه للتحقق من بريدك الإلكتروني. صالح لمدة 10 دقائق.',
     'email_verification_expiry' => 'ينتهي هذا الرمز بعد 10 دقائق.',
     'email_verification_ignore' => 'إذا لم تطلب هذا، يمكنك تجاهل هذا البريد.',
+
+    'email_verification_link_line' => 'اضغط على الزر أدناه لتأكيد بريدك الإلكتروني وتفعيل حسابك.',
+    'email_verification_link_button' => 'تأكيد البريد الإلكتروني',
+    'email_verification_link_expiry' => 'الرابط صالح لمدة 24 ساعة.',
+
+    'password_reset_subject' => 'إعادة تعيين كلمة المرور',
+    'password_reset_greeting' => 'مرحبًا :name،',
+    'password_reset_line' => 'تلقّينا طلباً لإعادة تعيين كلمة مرور حسابك. اضغط الزر أدناه لمتابعة العملية.',
+    'password_reset_button' => 'إعادة تعيين كلمة المرور',
+    'password_reset_expiry' => 'الرابط صالح لمدة ساعتين.',
+    'password_reset_ignore' => 'إذا لم تطلب إعادة التعيين، تجاهل هذا البريد ولن يحدث أي تغيير.',
 ];

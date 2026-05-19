@@ -6,8 +6,11 @@ return [
         'female' => 'Female',
     ],
     'role' => [
-        'admin' => 'Admin',
+        'owner' => 'Project owner',
+        'admin' => 'System admin',
         'member' => 'Member',
+        'family_business_owner' => 'Family business owner',
+        'external_partner' => 'External partner',
     ],
     'status' => [
         'active' => 'Active',
@@ -15,13 +18,27 @@ return [
         'rejected' => 'Rejected',
     ],
     'event_type' => [
+        'eid' => 'Eid',
         'wedding' => 'Wedding',
-        'death' => 'Death',
+        'condolence' => 'Condolence',
+        'trip' => 'Trip',
+        'meeting' => 'Meeting',
+        'conference' => 'Conference',
         'other' => 'Other',
     ],
     'offer_category' => [
-        'commercial' => 'Commercial',
-        'contractor' => 'Contractor',
+        'restaurants' => 'Restaurants',
+        'stores' => 'Stores',
+        'services' => 'Services',
+        'health' => 'Health',
+        'education' => 'Education',
+        'travel' => 'Travel',
+        'tech' => 'Tech',
+        'other' => 'Other',
+    ],
+    'offer_partner_type' => [
+        'family' => 'Family business',
+        'external' => 'External partner',
     ],
     'transaction_type' => [
         'donation' => 'Donation',
@@ -66,5 +83,28 @@ return [
         'accepted' => 'Accepted',
         'rejected' => 'Rejected',
         'in_progress' => 'In progress',
+    ],
+    'support_request_status' => [
+        'pending' => 'Submitted',
+        'under_review' => 'Under review',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+        'disbursed' => 'Disbursed',
+    ],
+    'news_comment_status' => [
+        'pending' => 'Pending',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+    ],
+    'reaction_type' => [
+        'like' => 'Like',
+        'love' => 'Love',
+        'sad' => 'Sad',
+        'pray' => 'Pray',
+    ],
+    'fund_initiative_status' => [
+        'active' => 'Active',
+        'completed' => 'Completed',
+        'suspended' => 'Suspended',
     ],
 ];

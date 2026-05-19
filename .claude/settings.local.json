@@ -15,7 +15,12 @@
       "Bash(\"C:/Users/hp/.config/herd/bin/php.bat\" artisan *)",
       "PowerShell(php artisan vendor:publish --tag=filament-google-maps-config 2>&1)",
       "PowerShell(php -l app/Filament/Resources/EventResource.php)",
-      "PowerShell(php -l app/Models/Event.php)"
+      "PowerShell(php -l app/Models/Event.php)",
+      "PowerShell(php artisan migrate 2>&1 | Select-Object -Last 30)",
+      "PowerShell(php artisan migrate 2>&1 | Select-Object -Last 12; php artisan optimize:clear 2>&1 | Select-Object -Last 3)",
+      "PowerShell(php artisan route:list 2>&1 | Select-String \"verify-link|reset-link|forgot-password|contact-info|home\")",
+      "PowerShell(php artisan test 2>&1 | Select-Object -Last 8)",
+      "PowerShell(php artisan optimize:clear 2>&1 | Select-Object -Last 2; php artisan test 2>&1 | Select-Object -Last 4)"
     ]
   }
 }

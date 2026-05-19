@@ -14,12 +14,9 @@ class StoreSuggestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'array'],
-            'title.ar' => ['required', 'string', 'max:255'],
-            'title.en' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'array'],
-            'description.ar' => ['required', 'string'],
-            'description.en' => ['required', 'string'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'suggestion' => ['required', 'string'],
         ];
     }
 }

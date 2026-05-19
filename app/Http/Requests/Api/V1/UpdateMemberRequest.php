@@ -11,7 +11,7 @@ class UpdateMemberRequest extends FormRequest
 {
     public function authorize(): bool|Response
     {
-        $member = $this->route('member');
+        $member = $this->route('member') ?? $this->user();
 
         if (! $member instanceof User) {
             return true;
@@ -35,7 +35,7 @@ class UpdateMemberRequest extends FormRequest
 
     public function rules(): array
     {
-        $member = $this->route('member');
+        $member = $this->route('member') ?? $this->user();
         $memberId = $member instanceof User ? $member->id : 0;
 
         // During Scribe extraction there is no authenticated user; show full field list (admin-capable).

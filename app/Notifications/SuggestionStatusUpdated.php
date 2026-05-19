@@ -65,14 +65,13 @@ class SuggestionStatusUpdated extends Notification
     /** @return array{0:string,1:string} */
     private function bodies(): array
     {
-        $suggestionTitleAr = $this->suggestion->getTranslation('title', 'ar');
-        $suggestionTitleEn = $this->suggestion->getTranslation('title', 'en');
+        $snippet = \Illuminate\Support\Str::limit((string) $this->suggestion->suggestion, 80);
         $statusLabelAr = $this->statusLabel('ar');
         $statusLabelEn = $this->statusLabel('en');
 
         return [
-            sprintf('اقتراحك "%s" أصبح: %s', $suggestionTitleAr, $statusLabelAr),
-            sprintf('Your suggestion "%s" is now: %s', $suggestionTitleEn, $statusLabelEn),
+            sprintf('اقتراحك "%s" أصبح: %s', $snippet, $statusLabelAr),
+            sprintf('Your suggestion "%s" is now: %s', $snippet, $statusLabelEn),
         ];
     }
 

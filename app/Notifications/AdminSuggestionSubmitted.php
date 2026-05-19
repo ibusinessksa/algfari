@@ -26,6 +26,7 @@ class AdminSuggestionSubmitted extends Notification
         $this->suggestion->loadMissing('submitter');
 
         $locale = app()->getLocale();
+        $snippet = \Illuminate\Support\Str::limit((string) $this->suggestion->suggestion, 120);
         $titleTranslations = [
             'ar' => 'اقتراح جديد للمراجعة',
             'en' => 'New suggestion to review',
@@ -33,13 +34,13 @@ class AdminSuggestionSubmitted extends Notification
         $bodyTranslations = [
             'ar' => sprintf(
                 'العضو %s قدّم اقتراحاً: %s',
-                $this->suggestion->submitter?->full_name ?? '',
-                $this->suggestion->getTranslation('title', 'ar')
+                $this->suggestion->submitter?->full_name ?? $this->suggestion->name ?? '',
+                $snippet
             ),
             'en' => sprintf(
                 'Member %s submitted a suggestion: %s',
-                $this->suggestion->submitter?->full_name ?? '',
-                $this->suggestion->getTranslation('title', 'en')
+                $this->suggestion->submitter?->full_name ?? $this->suggestion->name ?? '',
+                $snippet
             ),
         ];
 

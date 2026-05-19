@@ -16,15 +16,17 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia, HasName
 {
-    use HasApiTokens, HasFactory, InteractsWithMedia, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasRoles, InteractsWithMedia, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'full_name',
         'phone_number',
         'national_id',
+        'member_card_number',
         'email',
         'password',
         'family_id',
@@ -39,6 +41,7 @@ class User extends Authenticatable implements HasMedia, HasName
         'status',
         'social_links',
         'is_featured',
+        'job_title',
         'approved_by',
         'approved_at',
         'email_verified_at',
@@ -102,7 +105,7 @@ class User extends Authenticatable implements HasMedia, HasName
 
     public function children(): HasMany
     {
-        return $this->hasMany(MemberChild::class)->orderBy('sort_order');
+        return $this->hasMany(MemberChild::class)->with('linkedUser')->orderBy('sort_order');
     }
 
     public function sons(): HasMany

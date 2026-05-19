@@ -13,4 +13,6 @@ return [
     'email_already_verified' => 'البريد الإلكتروني مُحقَّق مسبقًا.',
     'email_verification_success' => 'تم التحقق من البريد الإلكتروني بنجاح.',
     'email_verification_invalid' => 'رمز التحقق غير صحيح أو منتهي الصلاحية.',
+    'email_verification_link_sent' => 'تم إرسال رابط التحقق إلى بريدك الإلكتروني.',
+    'email_verification_link_invalid' => 'رابط التحقق غير صالح أو منتهي الصلاحية.',
 ];

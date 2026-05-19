@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Api\V1;
 
+use App\Enums\UserRole;
 use App\Models\Event;
 use App\Models\EventAttendee;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class EventTest extends TestCase
@@ -17,6 +20,7 @@ class EventTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Notification::fake();
         $this->user = User::factory()->create();
     }
 
@@ -156,4 +160,58 @@ class EventTest extends TestCase
 
         $response->assertUnauthorized();
     }
+
+    public function test_event_creator_can_upload_gallery_images(): void
+    {
+        $event = Event::factory()->create([
+            'created_by' => $this->user->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/v1/events/{$event->id}/gallery", [
+                'images' => [
+                    UploadedFile::fake()->image('a.jpg'),
+                    UploadedFile::fake()->image('b.jpg'),
+                ],
+            ]);
+
+        $response->assertCreated()
+            ->assertJsonStructure(['message', 'gallery']);
+        $this->assertCount(2, $response->json('gallery'));
+    }
+
+    public function test_non_creator_non_admin_cannot_upload_gallery(): void
+    {
+        $creator = User::factory()->create();
+        $event = Event::factory()->create([
+            'created_by' => $creator->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson("/api/v1/events/{$event->id}/gallery", [
+                'images' => [UploadedFile::fake()->image('a.jpg')],
+            ]);
+
+        $response->assertForbidden();
+    }
+
+    public function test_admin_can_upload_gallery_for_any_event(): void
+    {
+        $creator = User::factory()->create();
+        $admin = User::factory()->create(['role' => UserRole::Admin]);
+        $event = Event::factory()->create([
+            'created_by' => $creator->id,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($admin, 'sanctum')
+            ->postJson("/api/v1/events/{$event->id}/gallery", [
+                'images' => [UploadedFile::fake()->image('a.jpg')],
+            ]);
+
+        $response->assertCreated();
+    }
+
 }

@@ -62,7 +62,8 @@ class JoinRequestFormRequest extends FormRequest
         return [
             'full_name' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[\p{Arabic}a-zA-Z0-9\s\'.-]+$/u'],
             'phone_number' => [
-                'required',
+                'required_without:email',
+                'nullable',
                 'string',
                 'regex:/^05\d{8}$/',
                 Rule::unique(User::class, 'phone_number'),
@@ -81,6 +82,7 @@ class JoinRequestFormRequest extends FormRequest
                 ),
             ],
             'email' => [
+                'required_without:phone_number',
                 'nullable',
                 'string',
                 'email:rfc,filter',
@@ -91,7 +93,7 @@ class JoinRequestFormRequest extends FormRequest
                 ),
             ],
             'pending_family_name' => ['nullable', 'string', 'min:2', 'max:255'],
-            'region_id' => ['required', 'integer', 'exists:regions,id'],
+            'region_id' => ['nullable', 'integer', 'exists:regions,id'],
             'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
             'profile_image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
         ];

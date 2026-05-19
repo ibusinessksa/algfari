@@ -2,9 +2,20 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\StoreSupportRequest;
+use App\Http\Resources\Api\V1\FundInitiativeResource;
+use App\Http\Resources\Api\V1\FundProfileResource;
 use App\Http\Resources\Api\V1\FundTransactionResource;
+use App\Http\Resources\Api\V1\SupportRequestResource;
 use App\Models\FamilyFundTransaction;
+use App\Models\FundInitiative;
+use App\Models\FundProfile;
+use App\Models\SupportRequest;
+use App\Models\User;
+use App\Notifications\AdminSupportRequestSubmitted;
 use App\Services\FundService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,7 +24,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 /**
  * @group Family Fund
  *
- * APIs for viewing family fund transactions and summary.
+ * APIs for the family fund: profile content, initiatives, transactions, support requests.
  */
 class FundController extends Controller
 {
@@ -22,41 +33,8 @@ class FundController extends Controller
     /**
      * List Transactions
      *
-     * Get a paginated list of approved fund transactions.
-     *
-     * @queryParam type string Filter by transaction type (donation/expense). Example: donation
-     * @queryParam per_page integer Items per page. Example: 15
-     *
-     * @response 200 scenario="success" {
-     *   "data": [
-     *     {
-     *       "id": 1,
-     *       "amount": "500.00",
-     *       "transaction_type": "donation",
-     *       "description": {"ar": "تبرع شهري لصندوق العائلة", "en": "Monthly donation"},
-     *       "status": "approved",
-     *       "receipt": "http://algfari.test/storage/media/20/receipt.pdf",
-     *       "receipt_thumb": null,
-     *       "contributor": {"id": 2, "full_name": "سعد القحطاني"},
-     *       "approved_at": "2026-04-10T12:00:00.000000Z",
-     *       "created_at": "2026-04-09T10:00:00.000000Z"
-     *     },
-     *     {
-     *       "id": 2,
-     *       "amount": "200.00",
-     *       "transaction_type": "expense",
-     *       "description": {"ar": "مصاريف إصلاح مجلس العائلة", "en": "Repair expenses"},
-     *       "status": "approved",
-     *       "receipt": null,
-     *       "receipt_thumb": null,
-     *       "contributor": null,
-     *       "approved_at": "2026-04-11T14:00:00.000000Z",
-     *       "created_at": "2026-04-11T09:00:00.000000Z"
-     *     }
-     *   ],
-     *   "links": {"first": "http://algfari.test/api/v1/fund?page=1", "last": "http://algfari.test/api/v1/fund?page=1", "prev": null, "next": null},
-     *   "meta": {"current_page": 1, "last_page": 1, "per_page": 15, "total": 2}
-     * }
+     * @queryParam type string Filter by transaction type (donation/expense).
+     * @queryParam per_page integer Items per page.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -72,13 +50,98 @@ class FundController extends Controller
 
     /**
      * Fund Summary
-     *
-     * Get the family fund financial summary (total donations, expenses, and balance).
-     *
-     * @response 200 {"total_donations": 15000.00, "total_expenses": 5000.00, "balance": 10000.00, "transactions_count": 42}
      */
     public function summary(): JsonResponse
     {
         return response()->json($this->fundService->getSummary());
+    }
+
+    /**
+     * Fund Profile
+     *
+     * Returns the fund's about/vision/mission/goals static content.
+     */
+    public function profile(): FundProfileResource
+    {
+        return new FundProfileResource(FundProfile::current());
+    }
+
+    /**
+     * List Initiatives
+     */
+    public function initiatives(Request $request): AnonymousResourceCollection
+    {
+        $initiatives = FundInitiative::query()
+            ->where('is_active', true)
+            ->when($request->status, fn ($q, $v) => $q->where('status', $v))
+            ->latest()
+            ->paginate($request->input('per_page', 15));
+
+        return FundInitiativeResource::collection($initiatives);
+    }
+
+    /**
+     * List My Support Requests
+     *
+     * @queryParam status string Filter by status (pending/under_review/approved/rejected/disbursed).
+     * @queryParam per_page integer Items per page.
+     */
+    public function mySupportRequests(Request $request): AnonymousResourceCollection
+    {
+        $requests = SupportRequest::query()
+            ->with('media')
+            ->where('user_id', $request->user()->id)
+            ->when($request->status, fn ($q, $v) => $q->where('status', $v))
+            ->latest()
+            ->paginate($request->input('per_page', 15));
+
+        return SupportRequestResource::collection($requests);
+    }
+
+    /**
+     * Show My Support Request
+     */
+    public function showSupportRequest(Request $request, int $id): SupportRequestResource
+    {
+        $supportRequest = SupportRequest::query()
+            ->with('media')
+            ->where('user_id', $request->user()->id)
+            ->findOrFail($id);
+
+        return new SupportRequestResource($supportRequest);
+    }
+
+    /**
+     * Submit Support Request
+     *
+     * @bodyParam title string required
+     * @bodyParam description string required
+     * @bodyParam amount_requested number
+     * @bodyParam attachments file[] Optional attachments (pdf/jpg/png/doc).
+     */
+    public function storeSupportRequest(StoreSupportRequest $request): JsonResponse
+    {
+        $supportRequest = SupportRequest::create([
+            'user_id' => $request->user()->id,
+            'title' => $request->string('title')->toString(),
+            'description' => $request->string('description')->toString(),
+            'amount_requested' => $request->input('amount_requested'),
+        ]);
+
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $supportRequest->addMedia($file)->toMediaCollection('attachments');
+            }
+        }
+
+        User::query()
+            ->where('role', UserRole::Admin)
+            ->where('status', UserStatus::Active)
+            ->each(fn (User $admin) => $admin->notify(new AdminSupportRequestSubmitted($supportRequest)));
+
+        return response()->json([
+            'message' => __('messages.support_request_submitted'),
+            'support_request' => new SupportRequestResource($supportRequest->fresh('media')),
+        ], 201);
     }
 }

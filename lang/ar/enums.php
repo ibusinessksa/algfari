@@ -6,8 +6,11 @@ return [
         'female' => 'أنثى',
     ],
     'role' => [
-        'admin' => 'مدير',
+        'owner' => 'مالك المشروع',
+        'admin' => 'مدير النظام',
         'member' => 'عضو',
+        'family_business_owner' => 'صاحب عمل من الأسرة',
+        'external_partner' => 'شريك تجاري خارجي',
     ],
     'status' => [
         'active' => 'فعال',
@@ -15,13 +18,27 @@ return [
         'rejected' => 'مرفوض',
     ],
     'event_type' => [
-        'wedding' => 'زواج',
-        'death' => 'عزاء',
+        'eid' => 'عيد',
+        'wedding' => 'زواج/فرح',
+        'condolence' => 'عزاء',
+        'trip' => 'رحلة',
+        'meeting' => 'اجتماع',
+        'conference' => 'مؤتمر',
         'other' => 'أخرى',
     ],
     'offer_category' => [
-        'commercial' => 'تجاري',
-        'contractor' => 'مقاول',
+        'restaurants' => 'مطاعم',
+        'stores' => 'متاجر',
+        'services' => 'خدمات',
+        'health' => 'صحة',
+        'education' => 'تعليم',
+        'travel' => 'سفر',
+        'tech' => 'تقنية',
+        'other' => 'أخرى',
+    ],
+    'offer_partner_type' => [
+        'family' => 'من أبناء الأسرة',
+        'external' => 'شريك خارجي',
     ],
     'transaction_type' => [
         'donation' => 'تبرع',
@@ -66,5 +83,28 @@ return [
         'accepted' => 'مقبول',
         'rejected' => 'مرفوض',
         'in_progress' => 'قيد التنفيذ',
+    ],
+    'support_request_status' => [
+        'pending' => 'مقدّم',
+        'under_review' => 'قيد الدراسة',
+        'approved' => 'موافق عليه',
+        'rejected' => 'مرفوض',
+        'disbursed' => 'تم الصرف',
+    ],
+    'news_comment_status' => [
+        'pending' => 'قيد المراجعة',
+        'approved' => 'منشور',
+        'rejected' => 'مرفوض',
+    ],
+    'reaction_type' => [
+        'like' => 'إعجاب',
+        'love' => 'مُحب',
+        'sad' => 'حزين',
+        'pray' => 'دعاء',
+    ],
+    'fund_initiative_status' => [
+        'active' => 'نشطة',
+        'completed' => 'مكتملة',
+        'suspended' => 'موقوفة',
     ],
 ];

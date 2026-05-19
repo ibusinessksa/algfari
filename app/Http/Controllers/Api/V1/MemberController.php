@@ -80,6 +80,21 @@ class MemberController extends Controller
             ->when($request->city_id, fn ($q, $v) => $q->where('city_id', $v))
             ->when($request->gender, fn ($q, $v) => $q->where('gender', $v))
             ->when($request->boolean('is_featured'), fn ($q) => $q->where('is_featured', true))
+            ->when($request->filled('branch_id'), function ($q) use ($request) {
+                $branchId = $request->integer('branch_id');
+                $q->whereHas('family', fn ($fq) => $fq->where(fn ($x) => $x->where('id', $branchId)->orWhere('parent_family_id', $branchId)));
+            })
+            ->when($request->filled('generation'), function ($q) use ($request) {
+                $gen = $request->integer('generation');
+                $q->whereHas('family', fn ($fq) => $fq->where('generation', $gen));
+            })
+            ->with([
+                'family',
+                'city.region.country',
+                'region.country',
+                'sons.linkedUser',
+                'daughters.linkedUser',
+            ])
             ->latest()
             ->paginate($request->input('per_page', 15));
 
@@ -207,6 +222,71 @@ class MemberController extends Controller
             'message' => __('messages.updated'),
             'user' => new UserResource($member),
         ]);
+    }
+
+    /**
+     * Get Profile
+     *
+     * Get the authenticated user's profile information.
+     *
+     * @response 200 scenario="success" {
+     *   "data": {
+     *     "id": 1,
+     *     "full_name": "محمد القحطاني",
+     *     "phone_number": "0551234567",
+     *     "national_id": "1234567890",
+     *     "email": "mohammed@example.com",
+     *     "city": "الرياض",
+     *     "region": "منطقة الرياض",
+     *     "bio": "مهندس برمجيات",
+     *     "gender": "male",
+     *     "role": "member",
+     *     "status": "active",
+     *     "is_featured": false,
+     *     "profile_image": null,
+     *     "created_at": "2026-04-01T10:00:00.000000Z"
+     *   }
+     * }
+     */
+    public function profile(Request $request): UserResource
+    {
+        $user = $request->user();
+
+        $user->load([
+            'family',
+            'city.region.country',
+            'region.country',
+            'sons.linkedUser',
+            'daughters.linkedUser',
+        ]);
+
+        return new UserResource($user);
+    }
+
+    /**
+     * Update My Profile
+     *
+     * Update the authenticated user's profile information.
+     *
+     * @bodyParam full_name string Full name. Example: محمد أحمد
+     * @bodyParam email string Email address. Example: mohammed@example.com
+     * @bodyParam pending_family_name string Free-text family name (creates admin review request). Send empty to withdraw.
+     * @bodyParam workplace string Workplace. Example: شركة س
+     * @bodyParam current_job string Current job. Example: مهندس برمجيات
+     * @bodyParam city_id int City id.
+     * @bodyParam region_id int Region id.
+     * @bodyParam bio string Biography.
+     * @bodyParam social_links object Social media links.
+     * @bodyParam profile_image file Profile image (max 5MB).
+     *
+     * @response 200 scenario="success" {
+     *   "message": "تم التحديث بنجاح",
+     *   "user": {"id": 1, "full_name": "محمد أحمد"}
+     * }
+     */
+    public function updateProfile(UpdateMemberRequest $request): JsonResponse
+    {
+        return $this->update($request, $request->user());
     }
 
     /**

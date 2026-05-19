@@ -37,30 +37,13 @@ class SuggestionResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make(__('admin_panel.suggestion.section'))->schema([
-                Forms\Components\Tabs::make('translations')
-                    ->tabs([
-                        Forms\Components\Tabs\Tab::make(__('admin_panel.tabs.arabic'))
-                            ->schema([
-                                Forms\Components\TextInput::make('title.ar')
-                                    ->label(__('admin_panel.common.title'))
-                                    ->required(),
-                                Forms\Components\Textarea::make('description.ar')
-                                    ->label(__('admin_panel.common.description'))
-                                    ->required()
-                                    ->columnSpanFull(),
-                            ]),
-                        Forms\Components\Tabs\Tab::make(__('admin_panel.tabs.english'))
-                            ->schema([
-                                Forms\Components\TextInput::make('title.en')
-                                    ->label(__('admin_panel.common.title'))
-                                    ->required(),
-                                Forms\Components\Textarea::make('description.en')
-                                    ->label(__('admin_panel.common.description'))
-                                    ->required()
-                                    ->columnSpanFull(),
-                            ]),
-                    ])
-                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('name')
+                    ->label(__('admin_panel.common.name'))
+                    ->disabled(),
+
+                Forms\Components\TextInput::make('email')
+                    ->label(__('admin_panel.common.email'))
+                    ->disabled(),
 
                 Forms\Components\Select::make('submitted_by')
                     ->label(__('admin_panel.suggestion.submitted_by'))
@@ -69,9 +52,16 @@ class SuggestionResource extends Resource
                     ->preload()
                     ->disabled(),
 
+                Forms\Components\Textarea::make('suggestion')
+                    ->label(__('admin_panel.suggestion.text'))
+                    ->disabled()
+                    ->columnSpanFull()
+                    ->rows(5),
+
                 Forms\Components\Select::make('status')
                     ->label(__('admin_panel.common.status'))
-                    ->options(SuggestionStatus::class),
+                    ->options(SuggestionStatus::class)
+                    ->required(),
 
                 Forms\Components\Textarea::make('admin_response')
                     ->label(__('admin_panel.common.admin_response'))
@@ -84,12 +74,13 @@ class SuggestionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
-                    ->label(__('admin_panel.common.title'))
-                    ->searchable()
-                    ->limit(40),
                 Tables\Columns\TextColumn::make('submitter.full_name')
-                    ->label(__('admin_panel.common.submitter')),
+                    ->label(__('admin_panel.common.submitter'))
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('suggestion')
+                    ->label(__('admin_panel.suggestion.text'))
+                    ->limit(60)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('admin_panel.common.status'))
                     ->formatStateUsing(fn (SuggestionStatus $state): string => $state->label())
@@ -117,6 +108,13 @@ class SuggestionResource extends Resource
                                 ->mapWithKeys(fn (SuggestionStatus $s) => [$s->value => $s->label()])
                                 ->all())
                             ->required(),
+                        Forms\Components\Textarea::make('admin_response')
+                            ->label(__('admin_panel.common.admin_response'))
+                            ->rows(4),
+                    ])
+                    ->fillForm(fn (Suggestion $record): array => [
+                        'status' => $record->status?->value,
+                        'admin_response' => $record->admin_response,
                     ])
                     ->action(function (Suggestion $record, array $data) {
                         $newStatus = SuggestionStatus::from($data['status']);
@@ -124,6 +122,7 @@ class SuggestionResource extends Resource
 
                         $record->update([
                             'status' => $newStatus,
+                            'admin_response' => $data['admin_response'] ?? null,
                             'reviewed_by' => auth()->id(),
                             'reviewed_at' => now(),
                         ]);
@@ -133,6 +132,7 @@ class SuggestionResource extends Resource
                         }
                     }),
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
             ]);
     }
 
@@ -140,6 +140,7 @@ class SuggestionResource extends Resource
     {
         return [
             'index' => Pages\ListSuggestions::route('/'),
+            'edit' => Pages\EditSuggestion::route('/{record}/edit'),
         ];
     }
 }

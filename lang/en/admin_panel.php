@@ -76,6 +76,7 @@ return [
         'profile_image' => 'Profile photo',
         'workplace' => 'Workplace',
         'current_job' => 'Current job',
+        'job_title' => 'Job title',
         'bio' => 'Bio',
         'basic_info' => 'Basic information',
         'extra_info' => 'Additional information',
@@ -104,6 +105,8 @@ return [
         'model' => 'Offer',
         'plural' => 'Offers',
         'section' => 'Offer details',
+        'partner_type' => 'Partner type',
+        'partner_name' => 'External partner name',
     ],
 
     'family' => [
@@ -113,6 +116,8 @@ return [
         'family_name' => 'Family name',
         'origin_placeholder' => 'e.g. Al-Rass families',
         'view_title' => 'Family details: :name',
+        'parent_family' => 'Parent family (branch)',
+        'generation' => 'Generation',
     ],
 
     'family_fund' => [
@@ -129,6 +134,14 @@ return [
         'model' => 'Member',
         'plural' => 'Members',
         'featured_member' => 'Featured member',
+        'in_banat_section' => 'In Banat AlQafari section',
+        'view_title' => 'Member details: :name',
+        'children_section' => 'Children',
+        'no_children' => 'No children recorded',
+        'child_name' => 'Name',
+        'child_gender' => 'Gender',
+        'child_birthday' => 'Birthday',
+        'child_linked_member' => 'Linked member',
     ],
 
     'join_request' => [
@@ -157,12 +170,78 @@ return [
         'reject' => 'Reject',
     ],
 
+    'support_request' => [
+        'model' => 'Support Request',
+        'plural' => 'Support Requests',
+        'section' => 'Support request details',
+        'amount_requested' => 'Requested amount',
+        'amount_granted' => 'Granted amount',
+        'admin_notes' => 'Admin notes',
+        'attachments' => 'Attachments',
+        'approve' => 'Approve',
+        'reject' => 'Reject',
+        'rejection_reason' => 'Rejection reason',
+        'approved_notification' => 'Support request approved',
+        'rejected_notification' => 'Support request rejected',
+    ],
+
+    'fund_initiative' => [
+        'model' => 'Initiative',
+        'plural' => 'Fund initiatives',
+        'section' => 'Initiative details',
+        'target_amount' => 'Target amount',
+        'raised_amount' => 'Raised amount',
+    ],
+
+    'news_comment' => [
+        'model' => 'News comment',
+        'plural' => 'News comments',
+        'approve' => 'Approve',
+        'reject' => 'Reject',
+    ],
+
+    'broadcast' => [
+        'model' => 'Broadcast',
+        'plural' => 'Broadcasts',
+        'section' => 'Broadcast details',
+        'audience' => 'Target audience',
+        'channels' => 'Delivery channels',
+        'send_now' => 'Send now',
+        'sent_at' => 'Sent at',
+        'recipients_count' => 'Recipients',
+        'audience_options' => [
+            'all' => 'All members',
+            'region' => 'By region',
+            'family' => 'By family',
+            'role' => 'By role',
+        ],
+    ],
+
+    'contact_settings' => [
+        'nav' => 'Contact info',
+        'title' => 'Family contact information',
+        'section' => 'Direct contact channels',
+        'social' => 'Social media accounts',
+    ],
+
+    'fund_profile' => [
+        'nav' => 'Fund Profile',
+        'title' => 'AlQafari Fund Profile',
+        'about' => 'About the fund',
+        'vision' => 'Vision',
+        'mission' => 'Mission',
+        'goals' => 'Goals',
+    ],
+
     'suggestion' => [
         'model' => 'Suggestion',
         'plural' => 'Suggestions',
         'section' => 'Suggestion details',
         'submitted_by' => 'Submitted by',
         'review' => 'Review',
+        'text' => 'Suggestion text',
+        'reviewer' => 'Reviewed by',
+        'reviewed_at' => 'Reviewed at',
     ],
 
     'country' => [

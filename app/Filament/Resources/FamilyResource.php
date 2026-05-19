@@ -49,6 +49,13 @@ class FamilyResource extends Resource
                     ->label(__('admin_panel.common.origin_lineage'))
                     ->maxLength(255)
                     ->placeholder(__('admin_panel.family.origin_placeholder')),
+
+                Forms\Components\Select::make('parent_family_id')
+                    ->label(__('admin_panel.family.parent_family'))
+                    ->relationship('parent', 'name', fn ($query, $record) => $record ? $query->where('id', '!=', $record->id) : $query)
+                    ->searchable()
+                    ->preload()
+                    ->nullable(),
             ])->columns(2),
         ]);
     }
@@ -87,6 +94,13 @@ class FamilyResource extends Resource
                     ->label(__('admin_panel.common.origin'))
                     ->searchable()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('parent.name')
+                    ->label(__('admin_panel.family.parent_family'))
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('generation')
+                    ->label(__('admin_panel.family.generation'))
+                    ->badge()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('members_count')
                     ->label(__('admin_panel.common.members_count'))
                     ->counts('members')

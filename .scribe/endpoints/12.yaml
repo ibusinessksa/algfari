@@ -1,0 +1,187 @@
+name: Offers
+description: |-
+
+  APIs for browsing member offers and services.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/offers
+    metadata:
+      custom: []
+      groupName: Offers
+      groupDescription: |-
+
+        APIs for browsing member offers and services.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List Offers'
+      description: 'Get a paginated list of active, non-expired offers.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      category:
+        custom: []
+        name: category
+        description: 'Filter by category (commercial/contractor).'
+        required: false
+        example: commercial
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Items per page.'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      category: commercial
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": "d4e5f6a7-8901-2bcd-ef34-567890123cde",
+                "title": "خدمة صيانة المكيفات",
+                "description": "صيانة وتركيب جميع أنواع المكيفات بأسعار مخفضة لأبناء القبيلة",
+                "category": "contractor",
+                "service_address": "الرياض - حي النسيم",
+                "contact_phone": "0559876543",
+                "contact_whatsapp": "0559876543",
+                "is_active": true,
+                "expires_at": "2026-06-01T00:00:00.000000Z",
+                "offered_by": {
+                  "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+                  "full_name": "خالد العتيبي"
+                },
+                "offer_image": "http://algfari.test/storage/media/15/offer.jpg",
+                "created_at": "2026-04-01T10:00:00.000000Z"
+              }
+            ],
+            "links": {"first": "http://algfari.test/api/v1/offers?page=1", "last": "http://algfari.test/api/v1/offers?page=1", "prev": null, "next": null},
+            "meta": {"current_page": 1, "last_page": 1, "per_page": 15, "total": 1}
+          }
+        headers: []
+        description: success
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/offers/{id}'
+    metadata:
+      custom: []
+      groupName: Offers
+      groupDescription: |-
+
+        APIs for browsing member offers and services.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Offer Details'
+      description: 'Get details of a specific offer.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+      Accept-Language: ar
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the offer.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      offer:
+        custom: []
+        name: offer
+        description: 'The offer UUID.'
+        required: true
+        example: 9a8b7c6d-1234-5678-abcd-ef0123456789
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+      offer: 9a8b7c6d-1234-5678-abcd-ef0123456789
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": "d4e5f6a7-8901-2bcd-ef34-567890123cde",
+              "title": "خدمة صيانة المكيفات",
+              "description": "صيانة وتركيب جميع أنواع المكيفات بأسعار مخفضة لأبناء القبيلة. نوفر خدمة منزلية.",
+              "category": "contractor",
+              "service_address": "الرياض - حي النسيم",
+              "contact_phone": "0559876543",
+              "contact_whatsapp": "0559876543",
+              "is_active": true,
+              "expires_at": "2026-06-01T00:00:00.000000Z",
+              "offered_by": {
+                "id": "9a8b7c6d-1234-5678-abcd-ef0123456789",
+                "full_name": "خالد العتيبي"
+              },
+              "offer_image": "http://algfari.test/storage/media/15/offer.jpg",
+              "gallery": [
+                "http://algfari.test/storage/media/16/gallery1.jpg",
+                "http://algfari.test/storage/media/17/gallery2.jpg"
+              ],
+              "created_at": "2026-04-01T10:00:00.000000Z"
+            }
+          }
+        headers: []
+        description: success
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

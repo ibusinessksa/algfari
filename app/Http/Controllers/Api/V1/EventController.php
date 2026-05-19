@@ -61,6 +61,9 @@ class EventController extends Controller
             ->withCount('attendees')
             ->when($request->event_type, fn ($q, $v) => $q->where('event_type', $v))
             ->when($request->boolean('upcoming'), fn ($q) => $q->where('event_date', '>', now()))
+            ->when($request->boolean('past'), fn ($q) => $q->where('event_date', '<=', now()))
+            ->when($request->from, fn ($q, $v) => $q->where('event_date', '>=', $v))
+            ->when($request->to, fn ($q, $v) => $q->where('event_date', '<=', $v))
             ->where('is_active', true)
             ->latest('event_date')
             ->paginate($request->input('per_page', 15));
@@ -127,5 +130,63 @@ class EventController extends Controller
         );
 
         return response()->json(['message' => __('messages.rsvp_updated')]);
+    }
+
+    /**
+     * Upload Gallery Images
+     *
+     * Upload one or more images to the event's gallery. Only the creator or an admin can upload.
+     *
+     * @bodyParam images file[] required Up to 10 images (max 10MB each).
+     */
+    public function uploadGallery(Request $request, Event $event): JsonResponse
+    {
+        $this->authorizeGalleryEdit($request, $event);
+
+        $request->validate([
+            'images' => ['required', 'array', 'max:10'],
+            'images.*' => ['file', 'image', 'max:10240'],
+        ]);
+
+        foreach ($request->file('images') as $file) {
+            $event->addMedia($file)->toMediaCollection('gallery');
+        }
+
+        $event->load('media');
+
+        return response()->json([
+            'message' => __('messages.gallery_uploaded'),
+            'gallery' => $event->getMedia('gallery')->map(fn ($m) => [
+                'id' => $m->id,
+                'url' => $m->getUrl(),
+                'medium' => $m->getUrl('medium'),
+                'thumb' => $m->getUrl('thumb'),
+            ])->all(),
+        ], 201);
+    }
+
+    /**
+     * Delete Gallery Image
+     */
+    public function deleteGalleryItem(Request $request, Event $event, int $mediaId): JsonResponse
+    {
+        $this->authorizeGalleryEdit($request, $event);
+
+        $media = $event->getMedia('gallery')->firstWhere('id', $mediaId);
+        abort_unless($media, 404);
+
+        $media->delete();
+
+        return response()->json(['message' => __('messages.deleted')]);
+    }
+
+    private function authorizeGalleryEdit(Request $request, Event $event): void
+    {
+        $user = $request->user();
+        abort_unless(
+            $user->id === $event->created_by || $user->role === \App\Enums\UserRole::Admin,
+            403,
+            __('messages.forbidden')
+        );
     }
 }

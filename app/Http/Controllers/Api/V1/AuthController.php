@@ -96,6 +96,14 @@ class AuthController extends Controller
 
         $token = $user->createToken('mobile')->plainTextToken;
 
+        $user->load([
+            'family',
+            'city.region.country',
+            'region.country',
+            'sons.linkedUser',
+            'daughters.linkedUser',
+        ]);
+
         if ($request->filled('device_token') && $request->filled('platform')) {
             UserDevice::updateOrCreate(
                 [
@@ -345,6 +353,89 @@ class AuthController extends Controller
         }
 
         return response()->json(['message' => __('auth.email_verification_success')]);
+    }
+
+    /**
+     * Send Email Verification Link (signed URL)
+     *
+     * Sends a 24h signed link to the authenticated user's email.
+     */
+    public function sendEmailVerificationLink(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->email) {
+            return response()->json(['message' => __('auth.no_email_on_file')], 400);
+        }
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => __('auth.email_already_verified')], 422);
+        }
+
+        $this->emailVerificationService->sendVerificationLink($user);
+
+        return response()->json(['message' => __('auth.email_verification_link_sent')]);
+    }
+
+    /**
+     * Verify Email via Signed Link
+     *
+     * Public endpoint hit when the user clicks the email link.
+     */
+    public function verifyEmailLink(Request $request, User $user): JsonResponse
+    {
+        if (! $request->hasValidSignature()) {
+            return response()->json(['message' => __('auth.email_verification_link_invalid')], 422);
+        }
+
+        if (! $user->email_verified_at) {
+            $user->update(['email_verified_at' => now()]);
+        }
+
+        return response()->json(['message' => __('auth.email_verification_success')]);
+    }
+
+    /**
+     * Forgot Password via Email
+     *
+     * @unauthenticated
+     * @bodyParam email string required
+     */
+    public function forgotPasswordEmail(Request $request): JsonResponse
+    {
+        $request->validate(['email' => ['required', 'email']]);
+
+        $user = User::where('email', $request->string('email')->lower()->toString())->first();
+
+        if ($user) {
+            $this->emailVerificationService->sendPasswordResetLink($user);
+        }
+
+        return response()->json(['message' => __('password.reset_link_sent')]);
+    }
+
+    /**
+     * Reset Password via Email Link
+     *
+     * Called by the link target after the user submits new password.
+     *
+     * @unauthenticated
+     * @bodyParam password string required min:8 letters+numbers
+     * @bodyParam password_confirmation string required
+     */
+    public function resetPasswordViaLink(Request $request, User $user): JsonResponse
+    {
+        if (! $request->hasValidSignature()) {
+            return response()->json(['message' => __('password.reset_link_invalid')], 422);
+        }
+
+        $request->validate([
+            'password' => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()],
+        ]);
+
+        $user->update(['password' => $request->password]);
+
+        return response()->json(['message' => __('password.reset_success')]);
     }
 
     /**

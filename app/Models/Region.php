@@ -18,6 +18,11 @@ class Region extends Model
         'country_id',
     ];
 
+    protected function casts(): array
+    {
+        return ['name' => 'json'];
+    }
+
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);

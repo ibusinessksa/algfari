@@ -18,6 +18,11 @@ class Country extends Model
         'code',
     ];
 
+    protected function casts(): array
+    {
+        return ['name' => 'json'];
+    }
+
     public function regions(): HasMany
     {
         return $this->hasMany(Region::class);

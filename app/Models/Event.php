@@ -34,6 +34,8 @@ class Event extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'title' => 'json',
+            'description' => 'json',
             'event_date' => 'datetime',
             'end_date' => 'datetime',
             'is_active' => 'boolean',
@@ -46,6 +48,7 @@ class Event extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('cover_image')->singleFile();
+        $this->addMediaCollection('gallery');
     }
 
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void

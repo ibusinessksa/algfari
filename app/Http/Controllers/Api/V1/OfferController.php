@@ -21,6 +21,7 @@ class OfferController extends Controller
      * Get a paginated list of active, non-expired offers.
      *
      * @queryParam category string Filter by category (commercial/contractor). Example: commercial
+     * @queryParam is_featured boolean Filter featured offers only. Example: 1
      * @queryParam per_page integer Items per page. Example: 15
      *
      * @response 200 scenario="success" {
@@ -50,9 +51,13 @@ class OfferController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $offers = Offer::query()
-            ->with(['offeredBy', 'media'])
+            ->with(['offeredBy', 'media', 'region'])
             ->where('is_active', true)
             ->when($request->category, fn ($q, $v) => $q->where('category', $v))
+            ->when($request->partner_type, fn ($q, $v) => $q->where('partner_type', $v))
+            ->when($request->region_id, fn ($q, $v) => $q->where('region_id', $v))
+            ->when($request->boolean('is_featured'), fn ($q) => $q->where('is_featured', true))
+            ->when($request->search, fn ($q, $v) => $q->where('title', 'like', "%{$v}%"))
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
@@ -95,7 +100,7 @@ class OfferController extends Controller
      */
     public function show(Offer $offer): OfferResource
     {
-        $offer->load(['offeredBy', 'media']);
+        $offer->load(['offeredBy', 'media', 'region']);
 
         return new OfferResource($offer);
     }

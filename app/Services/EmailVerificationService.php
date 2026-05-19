@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\EmailVerificationLinkMail;
 use App\Mail\EmailVerificationMail;
+use App\Mail\PasswordResetLinkMail;
 use App\Models\EmailVerificationCode;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class EmailVerificationService
 {
@@ -48,5 +51,27 @@ class EmailVerificationService
 
         $user->update(['email_verified_at' => now()]);
         return true;
+    }
+
+    public function sendVerificationLink(User $user): void
+    {
+        $url = URL::temporarySignedRoute(
+            'api.email.verify-link',
+            now()->addHours(24),
+            ['user' => $user->id]
+        );
+
+        Mail::to($user->email)->send(new EmailVerificationLinkMail($url, $user->full_name));
+    }
+
+    public function sendPasswordResetLink(User $user): void
+    {
+        $url = URL::temporarySignedRoute(
+            'api.password.reset-link',
+            now()->addHours(2),
+            ['user' => $user->id]
+        );
+
+        Mail::to($user->email)->send(new PasswordResetLinkMail($url, $user->full_name));
     }
 }

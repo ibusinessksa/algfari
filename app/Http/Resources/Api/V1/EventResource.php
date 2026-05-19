@@ -23,6 +23,12 @@ class EventResource extends JsonResource
             'cover_image' => $this->getFirstMediaUrl('cover_image'),
             'cover_image_medium' => $this->getFirstMediaUrl('cover_image', 'medium'),
             'cover_image_thumb' => $this->getFirstMediaUrl('cover_image', 'thumb'),
+            'gallery' => $this->getMedia('gallery')->map(fn ($m) => [
+                'id' => $m->id,
+                'url' => $m->getUrl(),
+                'medium' => $m->getUrl('medium'),
+                'thumb' => $m->getUrl('thumb'),
+            ])->all(),
             'creator' => new UserResource($this->whenLoaded('creator')),
             'attendees_count' => $this->whenCounted('attendees'),
             'created_at' => $this->created_at->toISOString(),

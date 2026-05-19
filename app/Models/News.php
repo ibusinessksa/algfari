@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -27,6 +28,8 @@ class News extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'title' => 'json',
+            'content' => 'json',
             'is_urgent' => 'boolean',
             'published_at' => 'datetime',
         ];
@@ -48,5 +51,20 @@ class News extends Model implements HasMedia
         $this->addMediaConversion('medium')
             ->width(400)
             ->height(400);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(NewsComment::class);
+    }
+
+    public function approvedComments(): HasMany
+    {
+        return $this->hasMany(NewsComment::class)->where('status', 'approved');
+    }
+
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(NewsReaction::class);
     }
 }

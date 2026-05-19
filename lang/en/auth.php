@@ -13,4 +13,6 @@ return [
     'email_already_verified' => 'Your email address is already verified.',
     'email_verification_success' => 'Email address verified successfully.',
     'email_verification_invalid' => 'Invalid or expired verification code.',
+    'email_verification_link_sent' => 'A verification link has been sent to your email address.',
+    'email_verification_link_invalid' => 'The verification link is invalid or has expired.',
 ];

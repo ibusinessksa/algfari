@@ -4,16 +4,17 @@ namespace App\Enums;
 
 enum EventType: string
 {
+    case Eid = 'eid';
     case Wedding = 'wedding';
-    case Death = 'death';
+    case Condolence = 'condolence';
+    case Trip = 'trip';
+    case Meeting = 'meeting';
+    case Conference = 'conference';
     case Other = 'other';
 
     public function label(): string
     {
-        return match ($this) {
-            self::Wedding => __('enums.event_type.wedding'),
-            self::Death => __('enums.event_type.death'),
-            self::Other => __('enums.event_type.other'),
-        };
+        return __('enums.event_type.'.$this->value);
     }
 }
+

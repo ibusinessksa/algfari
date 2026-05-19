@@ -43,4 +43,16 @@ return [
         'api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
+    /*
+    | SMS provider (Unifonic by default — drop-in compatible vendors can be added later).
+    */
+    'sms' => [
+        'driver' => env('SMS_DRIVER', 'log'),
+        'unifonic' => [
+            'app_sid' => env('UNIFONIC_APP_SID'),
+            'sender_id' => env('UNIFONIC_SENDER_ID', 'AlGafari'),
+            'endpoint' => env('UNIFONIC_ENDPOINT', 'https://el.cloud.unifonic.com/rest/SMS/messages'),
+        ],
+    ],
+
 ];

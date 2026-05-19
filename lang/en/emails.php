@@ -34,4 +34,15 @@ return [
     'email_verification_line' => 'Use the code below to verify your email address. It is valid for 10 minutes.',
     'email_verification_expiry' => 'This code expires in 10 minutes.',
     'email_verification_ignore' => 'If you did not request this, you can safely ignore this email.',
+
+    'email_verification_link_line' => 'Click the button below to confirm your email address and activate your account.',
+    'email_verification_link_button' => 'Verify email',
+    'email_verification_link_expiry' => 'This link is valid for 24 hours.',
+
+    'password_reset_subject' => 'Reset your password',
+    'password_reset_greeting' => 'Hello :name,',
+    'password_reset_line' => 'We received a request to reset your password. Click the button below to continue.',
+    'password_reset_button' => 'Reset password',
+    'password_reset_expiry' => 'This link is valid for 2 hours.',
+    'password_reset_ignore' => 'If you did not request this, you can safely ignore this email.',
 ];

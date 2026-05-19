@@ -17,6 +17,11 @@ class City extends Model
         'region_id',
     ];
 
+    protected function casts(): array
+    {
+        return ['name' => 'json'];
+    }
+
     public function region(): BelongsTo
     {
         return $this->belongsTo(Region::class);

@@ -26,19 +26,17 @@ class SuggestionController extends Controller
      *
      * Submit a new suggestion to the administration.
      *
-     * @bodyParam title object required Title in Arabic and English. Example: {"ar": "اقتراح جديد", "en": "New suggestion"}
-     * @bodyParam title.ar string required Title in Arabic. Example: اقتراح جديد
-     * @bodyParam title.en string required Title in English. Example: New suggestion
-     * @bodyParam description object required Description in Arabic and English. Example: {"ar": "وصف الاقتراح", "en": "Suggestion description"}
-     * @bodyParam description.ar string required Description in Arabic. Example: وصف الاقتراح
-     * @bodyParam description.en string required Description in English. Example: Suggestion description
+     * @bodyParam name string Full name (defaults to authenticated user's name). Example: تميم القفاري
+     * @bodyParam email string Email (defaults to authenticated user's email). Example: user@example.com
+     * @bodyParam suggestion string required The suggestion text. Example: يمكنك أن تكتب هنا مقترحاتك
      *
      * @response 201 scenario="success" {
      *   "message": "تم تقديم الاقتراح بنجاح",
      *   "suggestion": {
      *     "id": 1,
-     *     "title": {"ar": "اقتراح جديد", "en": "New suggestion"},
-     *     "description": {"ar": "وصف الاقتراح", "en": "Suggestion description"},
+     *     "name": "تميم القفاري",
+     *     "email": "user@example.com",
+     *     "suggestion": "يمكنك أن تكتب هنا مقترحاتك",
      *     "submitted_by": 1,
      *     "status": "pending",
      *     "created_at": "2026-04-13T10:00:00.000000Z",
@@ -62,8 +60,9 @@ class SuggestionController extends Controller
      *   "data": [
      *     {
      *       "id": 1,
-     *       "title": {"ar": "اقتراح جديد", "en": "New suggestion"},
-     *       "description": {"ar": "وصف الاقتراح", "en": "Suggestion description"},
+     *       "name": "تميم القفاري",
+     *       "email": "user@example.com",
+     *       "suggestion": "يمكنك أن تكتب هنا مقترحاتك",
      *       "status": "under_review",
      *       "admin_response": null,
      *       "reviewed_at": null,
@@ -94,10 +93,13 @@ class SuggestionController extends Controller
 
     public function store(StoreSuggestionRequest $request): JsonResponse
     {
+        $user = $request->user();
+
         $suggestion = Suggestion::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'submitted_by' => $request->user()->id,
+            'name' => $request->input('name') ?: $user->name,
+            'email' => $request->input('email') ?: $user->email,
+            'suggestion' => $request->string('suggestion')->toString(),
+            'submitted_by' => $user->id,
         ]);
 
         User::query()

@@ -87,6 +87,7 @@ class EventResource extends Resource
                         'country' => '%C',
                     ])
                     ->updateLatLng()
+                    ->dehydrateStateUsing(fn ($state) => is_array($state) ? ($state['formatted_address'] ?? null) : $state)
                     ->columnSpanFull(),
 
                 Map::make('location')
@@ -118,6 +119,7 @@ class EventResource extends Resource
                     ->relationship('creator', 'full_name')
                     ->searchable()
                     ->preload()
+                    ->default(fn () => auth()->id())
                     ->required(),
 
                 Forms\Components\Toggle::make('is_active')
@@ -128,6 +130,13 @@ class EventResource extends Resource
                     ->label(__('admin_panel.common.cover_image'))
                     ->collection('cover_image')
                     ->image(),
+
+                Forms\Components\SpatieMediaLibraryFileUpload::make('gallery')
+                    ->label(__('admin_panel.common.gallery'))
+                    ->collection('gallery')
+                    ->multiple()
+                    ->image()
+                    ->columnSpanFull(),
             ])->columns(2),
         ]);
     }

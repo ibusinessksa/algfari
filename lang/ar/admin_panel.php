@@ -76,6 +76,7 @@ return [
         'profile_image' => 'صورة الملف الشخصي',
         'workplace' => 'جهة العمل',
         'current_job' => 'العمل الحالي',
+        'job_title' => 'المسمى الوظيفي',
         'bio' => 'نبذة',
         'basic_info' => 'البيانات الأساسية',
         'extra_info' => 'بيانات إضافية',
@@ -104,6 +105,8 @@ return [
         'model' => 'عرض',
         'plural' => 'العروض',
         'section' => 'بيانات العرض',
+        'partner_type' => 'نوع الشريك',
+        'partner_name' => 'اسم الشريك الخارجي',
     ],
 
     'family' => [
@@ -113,6 +116,8 @@ return [
         'family_name' => 'اسم العائلة',
         'origin_placeholder' => 'مثال: أهل الرس',
         'view_title' => 'تفاصيل العائلة: :name',
+        'parent_family' => 'العائلة الأم (الفرع)',
+        'generation' => 'الجيل',
     ],
 
     'family_fund' => [
@@ -129,6 +134,14 @@ return [
         'model' => 'عضو',
         'plural' => 'الأعضاء',
         'featured_member' => 'عضو مميز',
+        'in_banat_section' => 'ضمن قسم بنات القفاري',
+        'view_title' => 'تفاصيل العضو: :name',
+        'children_section' => 'الأبناء',
+        'no_children' => 'لا يوجد أبناء مسجلون',
+        'child_name' => 'الاسم',
+        'child_gender' => 'الجنس',
+        'child_birthday' => 'تاريخ الميلاد',
+        'child_linked_member' => 'العضو المرتبط',
     ],
 
     'join_request' => [
@@ -157,12 +170,78 @@ return [
         'reject' => 'رفض',
     ],
 
+    'support_request' => [
+        'model' => 'طلب مساعدة',
+        'plural' => 'طلبات المساعدة',
+        'section' => 'بيانات طلب المساعدة',
+        'amount_requested' => 'المبلغ المطلوب',
+        'amount_granted' => 'المبلغ الممنوح',
+        'admin_notes' => 'ملاحظات الإدارة',
+        'attachments' => 'المرفقات',
+        'approve' => 'قبول',
+        'reject' => 'رفض',
+        'rejection_reason' => 'سبب الرفض',
+        'approved_notification' => 'تم قبول طلب المساعدة',
+        'rejected_notification' => 'تم رفض طلب المساعدة',
+    ],
+
+    'fund_initiative' => [
+        'model' => 'مبادرة',
+        'plural' => 'مبادرات الصندوق',
+        'section' => 'بيانات المبادرة',
+        'target_amount' => 'المبلغ المستهدف',
+        'raised_amount' => 'المبلغ المُحصَّل',
+    ],
+
+    'news_comment' => [
+        'model' => 'تعليق خبر',
+        'plural' => 'تعليقات الأخبار',
+        'approve' => 'اعتماد',
+        'reject' => 'رفض',
+    ],
+
+    'broadcast' => [
+        'model' => 'إشعار جماعي',
+        'plural' => 'الإشعارات الجماعية',
+        'section' => 'بيانات الإشعار',
+        'audience' => 'الجمهور المستهدف',
+        'channels' => 'قنوات الإرسال',
+        'send_now' => 'إرسال الآن',
+        'sent_at' => 'تاريخ الإرسال',
+        'recipients_count' => 'عدد المستلمين',
+        'audience_options' => [
+            'all' => 'جميع الأعضاء',
+            'region' => 'حسب المنطقة',
+            'family' => 'حسب العائلة',
+            'role' => 'حسب الدور',
+        ],
+    ],
+
+    'contact_settings' => [
+        'nav' => 'بيانات التواصل',
+        'title' => 'بيانات التواصل وقنوات الأسرة',
+        'section' => 'قنوات التواصل المباشر',
+        'social' => 'حسابات التواصل الاجتماعي',
+    ],
+
+    'fund_profile' => [
+        'nav' => 'تعريف الصندوق',
+        'title' => 'تعريف صندوق القفاري',
+        'about' => 'نبذة عن الصندوق',
+        'vision' => 'الرؤية',
+        'mission' => 'الرسالة',
+        'goals' => 'الأهداف',
+    ],
+
     'suggestion' => [
         'model' => 'مقترح',
         'plural' => 'المقترحات',
         'section' => 'بيانات المقترح',
         'submitted_by' => 'مقدم المقترح',
         'review' => 'مراجعة',
+        'text' => 'نص المقترح',
+        'reviewer' => 'تمت المراجعة بواسطة',
+        'reviewed_at' => 'تاريخ المراجعة',
     ],
 
     'country' => [

@@ -3,8 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Enums\OfferCategory;
+use App\Enums\OfferPartnerType;
 use App\Filament\Resources\OfferResource\Pages;
 use App\Models\Offer;
+use App\Models\Region;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -66,12 +68,31 @@ class OfferResource extends Resource
                     ->options(OfferCategory::class)
                     ->required(),
 
+                Forms\Components\Select::make('partner_type')
+                    ->label(__('admin_panel.offer.partner_type'))
+                    ->options(OfferPartnerType::class)
+                    ->default(OfferPartnerType::Family->value)
+                    ->required()
+                    ->live(),
+
+                Forms\Components\TextInput::make('partner_name')
+                    ->label(__('admin_panel.offer.partner_name'))
+                    ->visible(fn (\Filament\Forms\Get $get) => $get('partner_type') === OfferPartnerType::External->value)
+                    ->maxLength(255),
+
                 Forms\Components\Select::make('offered_by')
                     ->label(__('admin_panel.common.offered_by'))
                     ->relationship('offeredBy', 'full_name')
                     ->searchable()
                     ->preload()
                     ->required(),
+
+                Forms\Components\Select::make('region_id')
+                    ->label(__('admin_panel.common.region'))
+                    ->options(fn () => Region::all()->mapWithKeys(
+                        fn (Region $r) => [$r->id => $r->getTranslation('name', app()->getLocale()) ?: $r->getTranslation('name', 'ar')]
+                    ))
+                    ->searchable(),
 
                 Forms\Components\TextInput::make('service_address')
                     ->label(__('admin_panel.common.service_address')),
@@ -90,6 +111,9 @@ class OfferResource extends Resource
                 Forms\Components\Toggle::make('is_active')
                     ->label(__('admin_panel.common.active'))
                     ->default(true),
+
+                Forms\Components\Toggle::make('is_featured')
+                    ->label(__('admin_panel.common.featured')),
 
                 Forms\Components\SpatieMediaLibraryFileUpload::make('offer_image')
                     ->label(__('admin_panel.common.image'))
@@ -136,8 +160,13 @@ class OfferResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
                     ->options(OfferCategory::class),
+                Tables\Filters\SelectFilter::make('partner_type')
+                    ->label(__('admin_panel.offer.partner_type'))
+                    ->options(OfferPartnerType::class),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label(__('admin_panel.common.active')),
+                Tables\Filters\TernaryFilter::make('is_featured')
+                    ->label(__('admin_panel.common.featured')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OfferCategory;
+use App\Enums\OfferPartnerType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,10 +22,14 @@ class Offer extends Model implements HasMedia
         'title',
         'description',
         'category',
+        'partner_type',
+        'partner_name',
         'service_address',
+        'region_id',
         'contact_phone',
         'contact_whatsapp',
         'is_active',
+        'is_featured',
         'offered_by',
         'expires_at',
     ];
@@ -32,10 +37,19 @@ class Offer extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'title' => 'json',
+            'description' => 'json',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
             'expires_at' => 'datetime',
             'category' => OfferCategory::class,
+            'partner_type' => OfferPartnerType::class,
         ];
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Region::class);
     }
 
     public function registerMediaCollections(): void

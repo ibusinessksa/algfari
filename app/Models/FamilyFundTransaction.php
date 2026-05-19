@@ -30,6 +30,7 @@ class FamilyFundTransaction extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'description' => 'json',
             'amount' => 'decimal:2',
             'approved_at' => 'datetime',
             'transaction_type' => TransactionType::class,

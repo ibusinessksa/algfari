@@ -104,15 +104,32 @@ class JoinRequestValidationTest extends TestCase
         $response->assertCreated();
     }
 
-    public function test_join_request_requires_region_id(): void
+    public function test_join_request_requires_phone_or_email(): void
     {
         $payload = $this->validPayload();
-        unset($payload['region_id']);
+        unset($payload['phone_number']);
+        unset($payload['email']);
 
         $response = $this->postJson('/api/v1/auth/join-request', $payload);
 
         $response->assertUnprocessable()
-            ->assertJsonValidationErrors(['region_id']);
+            ->assertJsonValidationErrors(['phone_number']);
+    }
+
+    public function test_join_request_with_email_only_succeeds(): void
+    {
+        $r = $this->regionPayload();
+        $payload = [
+            'full_name' => 'محمد أحمد القفاري',
+            'email' => 'email.only@example.com',
+            'region_id' => $r['region_id'],
+            'password' => 'Pass1234',
+            'password_confirmation' => 'Pass1234',
+        ];
+
+        $response = $this->postJson('/api/v1/auth/join-request', $payload);
+
+        $response->assertCreated();
     }
 
     public function test_join_request_rejects_weak_password(): void
