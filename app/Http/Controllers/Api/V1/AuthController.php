@@ -201,9 +201,12 @@ class AuthController extends Controller
      * @bodyParam email string Optional unique email (not used by another member or pending join request). Example: mohammed@example.com
      * @bodyParam pending_family_name string Optional free-text family name (min 2 chars when sent). Stored until admin links the member after approval.
      * @bodyParam region_id int required Must exist in `regions.id`. Example: 1
+     * @bodyParam gender string Optional `male` or `female`. Example: male
      * @bodyParam password string required Min 8 characters, must include letters and numbers. Example: Secret123
      * @bodyParam password_confirmation string required Must match `password`. Example: Secret123
      * @bodyParam profile_image file Profile image (max 5MB, image format).
+     * @bodyParam device_token string Optional FCM token; if sent, `platform` is required. Stored and registered to the user on approval. Example: fcm-token-abc123xyz
+     * @bodyParam platform string Optional `ios` or `android`; required with `device_token`. Example: android
      *
      * @response 201 scenario="success" {
      *   "message": "تم تقديم طلب الانضمام بنجاح",

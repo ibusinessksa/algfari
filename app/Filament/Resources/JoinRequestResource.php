@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Gender;
 use App\Enums\JoinRequestStatus;
 use App\Filament\Resources\JoinRequestResource\Pages;
 use App\Models\JoinRequest;
@@ -65,6 +66,9 @@ class JoinRequestResource extends Resource
                     ->label(__('admin_panel.common.national_id')),
                 Forms\Components\TextInput::make('email')
                     ->label(__('admin_panel.common.email')),
+                Forms\Components\Select::make('gender')
+                    ->label(__('admin_panel.common.gender'))
+                    ->options(collect(Gender::cases())->mapWithKeys(fn (Gender $g) => [$g->value => $g->label()])->all()),
                 Forms\Components\TextInput::make('pending_family_name')
                     ->label(__('admin_panel.join_request.family_name_pending'))
                     ->maxLength(255),
@@ -110,6 +114,10 @@ class JoinRequestResource extends Resource
                 Tables\Columns\TextColumn::make('phone_number')
                     ->label(__('admin_panel.common.mobile'))
                     ->searchable(),
+                Tables\Columns\TextColumn::make('gender')
+                    ->label(__('admin_panel.common.gender'))
+                    ->formatStateUsing(fn (?string $state): string => $state ? (Gender::tryFrom($state)?->label() ?? $state) : '—')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('pending_family_name')
                     ->label(__('admin_panel.join_request.requested_family'))
                     ->toggleable()

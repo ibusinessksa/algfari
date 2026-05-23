@@ -12,8 +12,11 @@ return [
         'email' => 'email address',
         'pending_family_name' => 'requested family name',
         'region_id' => 'region',
+        'gender' => 'gender',
         'password' => 'password',
         'profile_image' => 'profile image',
+        'device_token' => 'device token',
+        'platform' => 'platform',
     ],
 
     'validation' => [

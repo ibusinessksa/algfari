@@ -6,6 +6,7 @@ use App\Enums\JoinRequestStatus;
 use App\Enums\UserStatus;
 use App\Models\JoinRequest;
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Notifications\JoinRequestApproved;
 use App\Notifications\JoinRequestRejected;
 use Illuminate\Support\Facades\Hash;
@@ -42,13 +43,27 @@ class JoinRequestService
             'password' => $joinRequest->password ?? $passwordHash ?? Hash::make('changeme'),
             'city_id' => null,
             'region_id' => $joinRequest->region_id,
-            'gender' => 'male',
+            'gender' => $joinRequest->gender ?? 'male',
             'status' => UserStatus::Active,
             'approved_by' => $reviewerId,
             'approved_at' => now(),
         ]);
 
         $joinRequest->update(['user_id' => $user->id]);
+
+        if (filled($joinRequest->device_token) && filled($joinRequest->platform)) {
+            UserDevice::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'device_token' => $joinRequest->device_token,
+                ],
+                [
+                    'platform' => $joinRequest->platform,
+                    'is_active' => true,
+                    'last_used_at' => now(),
+                ]
+            );
+        }
 
         // Transfer profile image if exists
         if ($joinRequest->hasMedia('profile_image')) {

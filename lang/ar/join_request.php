@@ -12,8 +12,11 @@ return [
         'email' => 'البريد الإلكتروني',
         'pending_family_name' => 'اسم العائلة المطلوب',
         'region_id' => 'المنطقة',
+        'gender' => 'الجنس',
         'password' => 'كلمة المرور',
         'profile_image' => 'صورة الملف الشخصي',
+        'device_token' => 'رمز الجهاز',
+        'platform' => 'نظام التشغيل',
     ],
 
     'validation' => [

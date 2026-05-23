@@ -94,8 +94,11 @@ class JoinRequestFormRequest extends FormRequest
             ],
             'pending_family_name' => ['nullable', 'string', 'min:2', 'max:255'],
             'region_id' => ['nullable', 'integer', 'exists:regions,id'],
+            'gender' => ['nullable', 'string', 'in:male,female'],
             'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
             'profile_image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
+            'device_token' => ['nullable', 'string', 'required_with:platform'],
+            'platform' => ['nullable', 'string', 'in:ios,android', 'required_with:device_token'],
         ];
     }
 
@@ -126,8 +129,11 @@ class JoinRequestFormRequest extends FormRequest
             'email' => __('join_request.fields.email'),
             'pending_family_name' => __('join_request.fields.pending_family_name'),
             'region_id' => __('join_request.fields.region_id'),
+            'gender' => __('join_request.fields.gender'),
             'password' => __('join_request.fields.password'),
             'profile_image' => __('join_request.fields.profile_image'),
+            'device_token' => __('join_request.fields.device_token'),
+            'platform' => __('join_request.fields.platform'),
         ];
     }
 }
