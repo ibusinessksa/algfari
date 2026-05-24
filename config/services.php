@@ -36,6 +36,14 @@ return [
     ],
 
     /*
+    | Firebase Cloud Messaging (HTTP v1 API). Point `credentials` at a service
+    | account JSON file with messaging privileges.
+    */
+    'fcm' => [
+        'credentials' => env('FIREBASE_CREDENTIALS', env('GOOGLE_APPLICATION_CREDENTIALS')),
+    ],
+
+    /*
     | Maps JavaScript API + Places (لنموذج موقع المناسبة في لوحة Filament).
     | فعّل في Google Cloud: Maps JavaScript API و Places API.
     */

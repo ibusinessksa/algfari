@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\BroadcastMail;
 use App\Models\Broadcast;
 use App\Models\User;
+use App\Services\FcmService;
 use App\Services\SmsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,7 +20,7 @@ class DispatchBroadcast implements ShouldQueue
 
     public function __construct(public int $broadcastId) {}
 
-    public function handle(SmsService $sms): void
+    public function handle(SmsService $sms, FcmService $fcm): void
     {
         $broadcast = Broadcast::find($this->broadcastId);
         if (! $broadcast) {
@@ -42,10 +43,44 @@ class DispatchBroadcast implements ShouldQueue
             }
         }
 
+        if (in_array('push', $channels, true)) {
+            $this->sendPush($broadcast, $recipients->pluck('id')->all(), $fcm);
+        }
+
         $broadcast->update([
             'sent_at' => now(),
             'recipients_count' => $recipients->count(),
         ]);
+    }
+
+    private function sendPush(Broadcast $broadcast, array $userIds, FcmService $fcm): void
+    {
+        if (empty($userIds)) {
+            return;
+        }
+
+        $tokens = \App\Models\UserDevice::query()
+            ->whereIn('user_id', $userIds)
+            ->where('is_active', true)
+            ->whereNotNull('device_token')
+            ->pluck('device_token')
+            ->all();
+
+        if (empty($tokens)) {
+            return;
+        }
+
+        $result = $fcm->sendMulticast(
+            $tokens,
+            (string) $broadcast->title,
+            (string) $broadcast->body,
+            ['type' => 'broadcast', 'broadcast_id' => (string) $broadcast->id],
+        );
+
+        if (! empty($result['invalid_tokens'])) {
+            \App\Models\UserDevice::whereIn('device_token', $result['invalid_tokens'])
+                ->update(['is_active' => false]);
+        }
     }
 
     private function resolveAudience(Broadcast $b)
