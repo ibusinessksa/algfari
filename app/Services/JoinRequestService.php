@@ -10,12 +10,12 @@ use App\Models\UserDevice;
 use App\Notifications\JoinRequestApproved;
 use App\Notifications\JoinRequestRejected;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Notification;
 
 class JoinRequestService
 {
     public function __construct(
-        protected FamilyRequestService $familyRequestService
+        protected FamilyRequestService $familyRequestService,
+        protected FcmService $fcm,
     ) {}
 
     public function submit(array $data, ?string $passwordHash = null): JoinRequest
@@ -90,9 +90,25 @@ class JoinRequestService
 
         if ($joinRequest->user) {
             $joinRequest->user->notify(new JoinRequestRejected($reason));
-        } elseif (filled($joinRequest->email)) {
-            Notification::route('mail', $joinRequest->email)
-                ->notify(new JoinRequestRejected($reason, $joinRequest->full_name));
+        } elseif (filled($joinRequest->device_token)) {
+            $titleAr = 'تم رفض طلب انضمامك';
+            $titleEn = 'Your join request has been rejected';
+            $bodyAr = 'للأسف تم رفض طلب انضمامك.'.($reason !== '' ? ' السبب: '.$reason : '');
+            $bodyEn = 'Unfortunately your join request has been rejected.'.($reason !== '' ? ' Reason: '.$reason : '');
+
+            $this->fcm->send(
+                (string) $joinRequest->device_token,
+                $titleAr,
+                $bodyAr,
+                [
+                    'type' => 'join_request_rejected',
+                    'rejection_reason' => $reason,
+                    'title_ar' => $titleAr,
+                    'title_en' => $titleEn,
+                    'body_ar' => $bodyAr,
+                    'body_en' => $bodyEn,
+                ],
+            );
         }
     }
 }
