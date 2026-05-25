@@ -2,9 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Models\User;
+use App\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class JoinRequestApproved extends Notification
@@ -13,20 +12,7 @@ class JoinRequestApproved extends Notification
 
     public function via(object $notifiable): array
     {
-        return array_values(array_filter([
-            'database',
-            filled($notifiable instanceof User ? $notifiable->email : null) ? 'mail' : null,
-        ]));
-    }
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        $name = $notifiable instanceof User ? $notifiable->full_name : __('emails.guest');
-
-        return (new MailMessage)
-            ->subject(__('emails.join_request_approved_subject'))
-            ->greeting(__('emails.join_request_approved_greeting', ['name' => $name]))
-            ->line(__('emails.join_request_approved_line'));
+        return ['database', FcmChannel::class];
     }
 
     public function toArray(object $notifiable): array
@@ -42,6 +28,27 @@ class JoinRequestApproved extends Notification
             ],
             'type' => 'join_request_approved',
             'action_url' => '/login',
+        ];
+    }
+
+    public function toFcm(object $notifiable): array
+    {
+        $titleAr = 'تم قبول طلب انضمامك';
+        $titleEn = 'Your join request has been approved';
+        $bodyAr = 'مرحبًا بك في العائلة! يمكنك الآن تسجيل الدخول.';
+        $bodyEn = 'Welcome to the family! You can now log in.';
+
+        return [
+            'title' => $titleAr,
+            'body' => $bodyAr,
+            'data' => [
+                'type' => 'join_request_approved',
+                'action_url' => '/login',
+                'title_ar' => $titleAr,
+                'title_en' => $titleEn,
+                'body_ar' => $bodyAr,
+                'body_en' => $bodyEn,
+            ],
         ];
     }
 }
