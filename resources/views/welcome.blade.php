@@ -46,7 +46,7 @@
             </nav>
 
             <div class="flex items-center gap-2">
-                <a href="/docs" class="hidden sm:inline-flex items-center px-4 h-10 rounded-xl text-sm font-semibold text-ink-700 hover:bg-ink-50 transition">وثائق API</a>
+                {{-- <a href="/docs" class="hidden sm:inline-flex items-center px-4 h-10 rounded-xl text-sm font-semibold text-ink-700 hover:bg-ink-50 transition">وثائق API</a> --}}
                 <a href="/admin" class="inline-flex items-center gap-2 px-4 h-10 rounded-xl text-sm font-semibold bg-ink-900 text-white hover:bg-brand-800 transition shadow-sm">
                     لوحة الإدارة
                     <svg class="w-4 h-4 rtl:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
@@ -367,7 +367,6 @@
                 <ul class="space-y-3 text-sm text-ink-500">
                     <li><a href="#features" class="hover:text-brand-700">المميزات</a></li>
                     <li><a href="#showcase" class="hover:text-brand-700">التطبيق</a></li>
-                    <li><a href="/docs" class="hover:text-brand-700">وثائق API</a></li>
                     <li><a href="/admin" class="hover:text-brand-700">لوحة الإدارة</a></li>
                 </ul>
             </div>

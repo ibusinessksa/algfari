@@ -38,7 +38,6 @@ class UpdateMemberRequest extends FormRequest
         $member = $this->route('member') ?? $this->user();
         $memberId = $member instanceof User ? $member->id : 0;
 
-        // During Scribe extraction there is no authenticated user; show full field list (admin-capable).
         $isAdmin = ! $this->user() || $this->user()->role === UserRole::Admin;
 
         return [
