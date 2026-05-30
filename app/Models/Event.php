@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EventType;
+use App\Models\Concerns\HasMapLocation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +15,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Event extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia, HasTranslations;
+    use HasFactory, HasMapLocation, HasTranslations, InteractsWithMedia, SoftDeletes;
 
     public array $translatable = ['title', 'description'];
 
@@ -74,22 +75,6 @@ class Event extends Model implements HasMedia
     public static function getComputedLocation(): string
     {
         return 'location';
-    }
-
-    public function getLocationAttribute(): array
-    {
-        return [
-            'lat' => $this->location_lat !== null ? (float) $this->location_lat : null,
-            'lng' => $this->location_lng !== null ? (float) $this->location_lng : null,
-        ];
-    }
-
-    public function setLocationAttribute(?array $location): void
-    {
-        if (is_array($location)) {
-            $this->attributes['location_lat'] = $location['lat'] ?? null;
-            $this->attributes['location_lng'] = $location['lng'] ?? null;
-        }
     }
 
     public static function getLocationCasts(): array

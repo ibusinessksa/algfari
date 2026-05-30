@@ -4,9 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Enums\EventType;
 use App\Filament\Resources\EventResource\Pages;
+use App\Filament\Support\MapLocationField;
 use App\Models\Event;
-use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
-use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -75,44 +74,7 @@ class EventResource extends Resource
                 Forms\Components\DateTimePicker::make('end_date')
                     ->label(__('admin_panel.common.end_date')),
 
-                Geocomplete::make('location_name')
-                    ->label(__('admin_panel.common.location_name'))
-                    ->isLocation()
-                    ->geocodeOnLoad()
-                    ->reverseGeocode([
-                        'street' => '%n %S',
-                        'city' => '%L',
-                        'state' => '%A1',
-                        'zip' => '%z',
-                        'country' => '%C',
-                    ])
-                    ->updateLatLng()
-                    ->dehydrateStateUsing(fn ($state) => is_array($state) ? ($state['formatted_address'] ?? null) : $state)
-                    ->columnSpanFull(),
-
-                Map::make('location')
-                    ->label(__('admin_panel.common.location'))
-                    ->autocomplete('location_name')
-                    ->defaultZoom(12)
-                    ->draggable()
-                    ->clickable()
-                    ->geolocate()
-                    ->geolocateLabel(__('admin_panel.common.use_my_location'))
-                    ->reverseGeocode([
-                        'street' => '%n %S',
-                        'city' => '%L',
-                        'state' => '%A1',
-                        'zip' => '%z',
-                        'country' => '%C',
-                    ])
-                    ->columnSpanFull()
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        $set('location_lat', $state['lat'] ?? null);
-                        $set('location_lng', $state['lng'] ?? null);
-                    }),
-
-                Forms\Components\Hidden::make('location_lat'),
-                Forms\Components\Hidden::make('location_lng'),
+                ...MapLocationField::make(),
 
                 Forms\Components\Select::make('created_by')
                     ->label(__('admin_panel.common.creator'))
