@@ -32,7 +32,7 @@ class FaqController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $faqs = Faq::active()->orderBy('order')->get();
+        $faqs = Faq::active()->orderBy('created_at', 'asc')->get();
 
         return FaqResource::collection($faqs);
     }
