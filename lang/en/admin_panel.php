@@ -217,6 +217,15 @@ return [
         ],
     ],
 
+    'faq' => [
+        'model' => 'FAQ',
+        'plural' => 'FAQs',
+        'section' => 'FAQ details',
+        'question' => 'Question',
+        'answer' => 'Answer',
+        'order' => 'Order',
+    ],
+
     'contact_settings' => [
         'nav' => 'Contact info',
         'title' => 'Family contact information',

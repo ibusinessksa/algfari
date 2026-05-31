@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\FaqController;
 use App\Http\Controllers\Api\V1\TestFcmController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\EventController;
@@ -36,6 +37,7 @@ Route::prefix('v1')->group(function () {
     Route::get('regions', [RegionController::class, 'index']);
     Route::get('cities', [CityController::class, 'index']);
     Route::get('contact-info', [ContactController::class, 'index']);
+    Route::get('faqs', [FaqController::class, 'index']);
 
     // ── Visitors ──
     Route::post('visitors', [VisitorController::class, 'increment']);
