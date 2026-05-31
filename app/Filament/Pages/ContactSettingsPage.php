@@ -80,6 +80,6 @@ class ContactSettingsPage extends Page implements HasForms
 
     protected function getFormActions(): array
     {
-        return [Action::make('save')->label(__('messages.updated'))->submit('save')];
+        return [Action::make('save')->label(__('messages.save'))->submit('save')];
     }
 }

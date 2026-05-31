@@ -3,7 +3,7 @@
         {{ $this->form }}
 
         <div class="mt-6 flex justify-end gap-2">
-            <x-filament::button type="submit">{{ __('messages.updated') }}</x-filament::button>
+            <x-filament::button type="submit">{{ __('messages.save') }}</x-filament::button>
         </div>
     </form>
 </x-filament-panels::page>

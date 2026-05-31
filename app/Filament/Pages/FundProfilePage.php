@@ -98,7 +98,7 @@ class FundProfilePage extends Page implements HasForms
     {
         return [
             Action::make('save')
-                ->label(__('messages.updated'))
+                ->label(__('messages.save'))
                 ->submit('save'),
         ];
     }

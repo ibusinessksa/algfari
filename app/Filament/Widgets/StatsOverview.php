@@ -15,8 +15,12 @@ class StatsOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
+        $totalMembers = User::where(function ($q): void {
+            $q->whereNull('email')->orWhere('email', '!=', 'admin@familytribe.app');
+        })->count();
+
         return [
-            Stat::make(__('admin_panel.widgets.stats.total_members'), User::where('status', 'active')->count())
+            Stat::make(__('admin_panel.widgets.stats.total_members'), $totalMembers)
                 ->icon('heroicon-o-users')
                 ->color('success'),
 

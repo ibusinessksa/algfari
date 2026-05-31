@@ -6,6 +6,7 @@ return [
     'not_found' => 'Item not found.',
     'unauthorized' => 'Unauthorized.',
     'forbidden' => 'Forbidden.',
+    'save' => 'Save',
     'updated' => 'Updated successfully.',
     'deleted' => 'Deleted successfully.',
     'created' => 'Created successfully.',
