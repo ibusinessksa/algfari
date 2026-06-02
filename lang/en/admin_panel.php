@@ -103,8 +103,9 @@ return [
 
     'offer' => [
         'model' => 'Offer',
-        'plural' => 'Offers',
+        'plural' => 'Commercial Offers',
         'section' => 'Offer details',
+        'type' => 'Offer type',
         'partner_type' => 'Partner type',
         'partner_name' => 'External partner name',
     ],

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\OfferCategory;
+use App\Enums\OfferType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,6 +18,7 @@ class OfferFactory extends Factory
             'title' => ['ar' => fake('ar_SA')->sentence(3), 'en' => fake()->sentence(3)],
             'description' => ['ar' => fake('ar_SA')->paragraph(), 'en' => fake()->paragraph()],
             'category' => fake()->randomElement(OfferCategory::cases()),
+            'type' => fake()->randomElement(OfferType::cases()),
             'service_address' => fake()->optional()->address(),
             'contact_phone' => fake()->numerify('05########'),
             'contact_whatsapp' => fake()->optional()->numerify('05########'),

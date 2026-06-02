@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum EventType: string
+use Filament\Support\Contracts\HasLabel;
+
+enum EventType: string implements HasLabel
 {
     case Eid = 'eid';
     case Wedding = 'wedding';
@@ -15,6 +17,11 @@ enum EventType: string
     public function label(): string
     {
         return __('enums.event_type.'.$this->value);
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 }
 

@@ -20,8 +20,10 @@ class OfferController extends Controller
      *
      * Get a paginated list of active, non-expired offers.
      *
+     * @queryParam type string Filter by offer type (commercial/normal). Example: commercial
      * @queryParam category string Filter by category (commercial/contractor). Example: commercial
      * @queryParam is_featured boolean Filter featured offers only. Example: 1
+     * @queryParam latest_first boolean Order offers from newest to oldest (created_at DESC) when set to 1. Defaults to oldest first. Example: 1
      * @queryParam per_page integer Items per page. Example: 15
      *
      * @response 200 scenario="success" {
@@ -53,6 +55,7 @@ class OfferController extends Controller
         $offers = Offer::query()
             ->with(['offeredBy', 'media', 'region'])
             ->where('is_active', true)
+            ->when($request->type, fn ($q, $v) => $q->where('type', $v))
             ->when($request->category, fn ($q, $v) => $q->where('category', $v))
             ->when($request->partner_type, fn ($q, $v) => $q->where('partner_type', $v))
             ->when($request->region_id, fn ($q, $v) => $q->where('region_id', $v))
@@ -61,7 +64,7 @@ class OfferController extends Controller
             ->where(function ($q) {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
-            ->latest()
+            ->orderBy('id', $request->latest_first ? 'desc' : 'asc')
             ->paginate($request->input('per_page', 15));
 
         return OfferResource::collection($offers);

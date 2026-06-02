@@ -36,6 +36,10 @@ return [
         'tech' => 'Tech',
         'other' => 'Other',
     ],
+    'offer_type' => [
+        'commercial' => 'Commercial offer',
+        'normal' => 'Normal offer',
+    ],
     'offer_partner_type' => [
         'family' => 'Family business',
         'external' => 'External partner',

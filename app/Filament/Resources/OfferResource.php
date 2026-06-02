@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\OfferCategory;
 use App\Enums\OfferPartnerType;
+use App\Enums\OfferType;
 use App\Filament\Resources\OfferResource\Pages;
 use App\Models\Offer;
 use App\Models\Region;
@@ -62,6 +63,12 @@ class OfferResource extends Resource
                             ]),
                     ])
                     ->columnSpanFull(),
+
+                Forms\Components\Select::make('type')
+                    ->label(__('admin_panel.offer.type'))
+                    ->options(OfferType::class)
+                    ->default(OfferType::Normal->value)
+                    ->required(),
 
                 Forms\Components\Select::make('category')
                     ->label(__('admin_panel.common.category'))
@@ -142,6 +149,10 @@ class OfferResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(40),
+                Tables\Columns\TextColumn::make('type')
+                    ->label(__('admin_panel.offer.type'))
+                    ->formatStateUsing(fn (OfferType $state): string => $state->label())
+                    ->badge(),
                 Tables\Columns\TextColumn::make('category')
                     ->label(__('admin_panel.common.category'))
                     ->formatStateUsing(fn (OfferCategory $state): string => $state->label())
@@ -158,6 +169,9 @@ class OfferResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
+                Tables\Filters\SelectFilter::make('type')
+                    ->label(__('admin_panel.offer.type'))
+                    ->options(OfferType::class),
                 Tables\Filters\SelectFilter::make('category')
                     ->options(OfferCategory::class),
                 Tables\Filters\SelectFilter::make('partner_type')

@@ -36,6 +36,10 @@ return [
         'tech' => 'تقنية',
         'other' => 'أخرى',
     ],
+    'offer_type' => [
+        'commercial' => 'عرض تجاري',
+        'normal' => 'عرض عادي',
+    ],
     'offer_partner_type' => [
         'family' => 'من أبناء الأسرة',
         'external' => 'شريك خارجي',

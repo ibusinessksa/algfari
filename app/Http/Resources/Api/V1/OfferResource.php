@@ -14,6 +14,7 @@ class OfferResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'category' => $this->category,
+            'type' => $this->type?->value,
             'partner_type' => $this->partner_type?->value,
             'partner_name' => $this->partner_name,
             'service_address' => $this->service_address,

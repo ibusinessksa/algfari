@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\OfferCategory;
 use App\Enums\OfferPartnerType;
+use App\Enums\OfferType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,7 @@ class Offer extends Model implements HasMedia
         'title',
         'description',
         'category',
+        'type',
         'partner_type',
         'partner_name',
         'service_address',
@@ -43,6 +45,7 @@ class Offer extends Model implements HasMedia
             'is_featured' => 'boolean',
             'expires_at' => 'datetime',
             'category' => OfferCategory::class,
+            'type' => OfferType::class,
             'partner_type' => OfferPartnerType::class,
         ];
     }
