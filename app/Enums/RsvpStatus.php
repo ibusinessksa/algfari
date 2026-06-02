@@ -2,11 +2,18 @@
 
 namespace App\Enums;
 
-enum RsvpStatus: string
+use Filament\Support\Contracts\HasLabel;
+
+enum RsvpStatus: string implements HasLabel
 {
     case Going = 'going';
     case Maybe = 'maybe';
     case Declined = 'declined';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

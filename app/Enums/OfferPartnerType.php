@@ -2,10 +2,17 @@
 
 namespace App\Enums;
 
-enum OfferPartnerType: string
+use Filament\Support\Contracts\HasLabel;
+
+enum OfferPartnerType: string implements HasLabel
 {
     case Family = 'family';
     case External = 'external';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

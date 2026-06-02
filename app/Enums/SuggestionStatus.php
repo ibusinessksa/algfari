@@ -2,12 +2,25 @@
 
 namespace App\Enums;
 
-enum SuggestionStatus: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum SuggestionStatus: string implements HasColor, HasLabel
 {
     case UnderReview = 'under_review';
     case Accepted = 'accepted';
     case Rejected = 'rejected';
     case InProgress = 'in_progress';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
+
+    public function getColor(): string | array | null
+    {
+        return $this->color();
+    }
 
     public function label(): string
     {

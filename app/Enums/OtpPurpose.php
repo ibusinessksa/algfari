@@ -2,11 +2,18 @@
 
 namespace App\Enums;
 
-enum OtpPurpose: string
+use Filament\Support\Contracts\HasLabel;
+
+enum OtpPurpose: string implements HasLabel
 {
     case Register = 'register';
     case Reset = 'reset';
     case Verify = 'verify';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

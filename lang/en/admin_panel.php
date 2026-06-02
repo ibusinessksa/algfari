@@ -216,6 +216,11 @@ return [
             'family' => 'By family',
             'role' => 'By role',
         ],
+        'channel_options' => [
+            'email' => 'Email',
+            'sms' => 'SMS',
+            'push' => 'Push (FCM)',
+        ],
     ],
 
     'faq' => [

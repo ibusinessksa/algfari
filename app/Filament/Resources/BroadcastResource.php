@@ -56,7 +56,7 @@ class BroadcastResource extends Resource
                     ->label(__('admin_panel.common.region'))
                     ->visible(fn (Get $get) => $get('audience_type') === 'region')
                     ->options(fn () => \App\Models\Region::all()->mapWithKeys(
-                        fn ($r) => [$r->id => $r->getTranslation('name', 'ar')]
+                        fn (\App\Models\Region $r) => [$r->id => $r->getTranslation('name', app()->getLocale()) ?: $r->getTranslation('name', 'ar')]
                     )),
 
                 Forms\Components\Select::make('audience_filter.family_id')
@@ -67,14 +67,17 @@ class BroadcastResource extends Resource
                 Forms\Components\Select::make('audience_filter.role')
                     ->label(__('admin_panel.common.role'))
                     ->visible(fn (Get $get) => $get('audience_type') === 'role')
-                    ->options(['admin' => 'Admin', 'member' => 'Member']),
+                    ->options([
+                        'admin' => __('enums.role.admin'),
+                        'member' => __('enums.role.member'),
+                    ]),
 
                 Forms\Components\CheckboxList::make('channels')
                     ->label(__('admin_panel.broadcast.channels'))
                     ->options([
-                        'email' => 'Email',
-                        'sms' => 'SMS',
-                        'push' => 'Push (FCM)',
+                        'email' => __('admin_panel.broadcast.channel_options.email'),
+                        'sms' => __('admin_panel.broadcast.channel_options.sms'),
+                        'push' => __('admin_panel.broadcast.channel_options.push'),
                     ])
                     ->default(['email'])
                     ->required()

@@ -2,11 +2,18 @@
 
 namespace App\Enums;
 
-enum JoinRequestStatus: string
+use Filament\Support\Contracts\HasLabel;
+
+enum JoinRequestStatus: string implements HasLabel
 {
     case Pending = 'pending';
     case Approved = 'approved';
     case Rejected = 'rejected';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

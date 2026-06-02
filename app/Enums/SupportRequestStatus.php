@@ -2,13 +2,26 @@
 
 namespace App\Enums;
 
-enum SupportRequestStatus: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum SupportRequestStatus: string implements HasColor, HasLabel
 {
     case Pending = 'pending';
     case UnderReview = 'under_review';
     case Approved = 'approved';
     case Rejected = 'rejected';
     case Disbursed = 'disbursed';
+
+    public function getLabel(): ?string
+    {
+        return $this->label();
+    }
+
+    public function getColor(): string | array | null
+    {
+        return $this->color();
+    }
 
     public function label(): string
     {
