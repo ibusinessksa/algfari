@@ -45,6 +45,7 @@ class User extends Authenticatable implements HasMedia, HasName
         'approved_by',
         'approved_at',
         'email_verified_at',
+        'rejection_reason',
     ];
 
     protected $hidden = [

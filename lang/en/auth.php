@@ -3,6 +3,9 @@
 return [
     'failed' => 'Invalid login credentials.',
     'inactive' => 'Your account is not active. Please contact the administration.',
+    'pending' => 'Your account is pending approval.',
+    'rejected' => 'Your account has been rejected.',
+    'rejected_as' => 'Your account has been rejected, reason: :reason.',
     'logged_out' => 'Logged out successfully.',
     'user_not_found' => 'User not found.',
     'phone_already_registered' => 'This phone number is already registered.',

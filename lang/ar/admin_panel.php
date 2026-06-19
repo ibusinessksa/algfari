@@ -27,6 +27,7 @@ return [
         'attendees' => 'الحضور',
         'active' => 'فعال',
         'status' => 'الحالة',
+        'rejection_reason' => 'سبب الرفض',
         'name' => 'الاسم',
         'full_name' => 'الاسم الكامل',
         'phone' => 'رقم الجوال',

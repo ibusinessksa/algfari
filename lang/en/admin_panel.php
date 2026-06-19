@@ -27,6 +27,7 @@ return [
         'attendees' => 'Attendance',
         'active' => 'Active',
         'status' => 'Status',
+        'rejection_reason' => 'Rejection reason',
         'name' => 'Name',
         'full_name' => 'Full name',
         'phone' => 'Phone',

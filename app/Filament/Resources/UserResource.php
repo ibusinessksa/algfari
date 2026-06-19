@@ -85,7 +85,14 @@ class UserResource extends Resource
                 Forms\Components\Select::make('status')
                     ->label(__('admin_panel.common.status'))
                     ->options(UserStatus::class)
-                    ->required(),
+                    ->required()
+                    ->live(),
+
+                Forms\Components\Textarea::make('rejection_reason')
+                    ->label(__('admin_panel.common.rejection_reason'))
+                    ->visible(fn (Get $get) => $get('status') === UserStatus::Rejected->value)
+                    ->required(fn (Get $get) => $get('status') === UserStatus::Rejected->value)
+                    ->columnSpanFull(),
             ])->columns(2),
 
             Forms\Components\Section::make(__('admin_panel.common.extra_info'))->schema([
@@ -190,6 +197,11 @@ class UserResource extends Resource
                             UserStatus::Pending => 'warning',
                             UserStatus::Rejected => 'danger',
                         }),
+
+                    Infolists\Components\TextEntry::make('rejection_reason')
+                        ->label(__('admin_panel.common.rejection_reason'))
+                        ->visible(fn (User $record) => $record->status === UserStatus::Rejected && filled($record->rejection_reason))
+                        ->columnSpanFull(),
                 ])->columns(2),
 
             Infolists\Components\Section::make(__('admin_panel.common.extra_info'))

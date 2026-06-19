@@ -173,8 +173,7 @@ class JoinRequestResource extends Resource
                     ->color('danger')
                     ->form([
                         Forms\Components\Textarea::make('rejection_reason')
-                            ->label(__('admin_panel.common.rejection_reason'))
-                            ->required(),
+                            ->label(__('admin_panel.common.rejection_reason')),
                     ])
                     ->action(function (JoinRequest $record, array $data) {
                         app(JoinRequestService::class)->reject(

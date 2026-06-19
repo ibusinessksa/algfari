@@ -83,11 +83,35 @@ class AuthController extends Controller
             ->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
+            // User not found in users table — check join_requests for pending/rejected applicants
+            if (! $user) {
+                $joinRequest = JoinRequest::where('phone_number', $login)
+                    ->orWhere('national_id', $login)
+                    ->orWhere('email', $login)
+                    ->first();
+
+                if ($joinRequest && Hash::check($request->password, $joinRequest->password)) {
+                    if ($joinRequest->status === \App\Enums\JoinRequestStatus::Pending) {
+                        return response()->json(['message' => __('auth.pending')], 422);
+                    }
+
+                    if ($joinRequest->status === \App\Enums\JoinRequestStatus::Rejected) {
+                        $withReason = __('auth.rejected_as', ['reason' => $joinRequest->rejection_reason]);
+                        $withoutReason = __('auth.rejected');
+                        return response()->json(['message' => $joinRequest->rejection_reason ? $withReason : $withoutReason], 422);
+                    }
+                }
+            }
+
             return response()->json(['message' => __('auth.failed')], 401);
         }
 
-        if ($user->status !== UserStatus::Active) {
-            return response()->json(['message' => __('auth.inactive')], 403);
+        if ($user->status === UserStatus::Pending) {
+            return response()->json(['message' => __('auth.pending')], 422);
+        }
+
+        if ($user->status === UserStatus::Rejected) {
+            return response()->json(['message' => $user->rejection_reason ?? __('auth.rejected')], 422);
         }
 
         if ($isEmailLogin && ! $user->email_verified_at) {

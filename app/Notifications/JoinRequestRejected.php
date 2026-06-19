@@ -10,7 +10,7 @@ class JoinRequestRejected extends Notification
 {
     use Queueable;
 
-    public function __construct(private string $reason = '') {}
+    public function __construct(private ?string $reason = null) {}
 
     public function via(object $notifiable): array
     {

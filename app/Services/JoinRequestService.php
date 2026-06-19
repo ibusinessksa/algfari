@@ -79,7 +79,7 @@ class JoinRequestService
         return $user->fresh();
     }
 
-    public function reject(JoinRequest $joinRequest, string $reviewerId, string $reason): void
+    public function reject(JoinRequest $joinRequest, string $reviewerId, ?string $reason): void
     {
         $joinRequest->update([
             'status' => JoinRequestStatus::Rejected,
@@ -93,8 +93,8 @@ class JoinRequestService
         } elseif (filled($joinRequest->device_token)) {
             $titleAr = 'تم رفض طلب انضمامك';
             $titleEn = 'Your join request has been rejected';
-            $bodyAr = 'للأسف تم رفض طلب انضمامك.'.($reason !== '' ? ' السبب: '.$reason : '');
-            $bodyEn = 'Unfortunately your join request has been rejected.'.($reason !== '' ? ' Reason: '.$reason : '');
+            $bodyAr = 'للأسف تم رفض طلب انضمامك.'.(filled($reason) ? ' السبب: '.$reason : '');
+            $bodyEn = 'Unfortunately your join request has been rejected.'.(filled($reason) ? ' Reason: '.$reason : '');
 
             $this->fcm->send(
                 (string) $joinRequest->device_token,
